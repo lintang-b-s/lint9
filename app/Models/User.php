@@ -92,6 +92,9 @@ class User extends BaseModel implements
             'email' => 'email|max:255|unique:users',
             'name'  => 'required|min:3',
             'password' => 'required|min:6',
+            "is_admin" => 'required',
+            "address" => 'required',
+            "phone" => 'required'
         ];
     }
 
@@ -177,4 +180,11 @@ class User extends BaseModel implements
     {
         return $this->getKeyName();
     }
+
+
+    public function post() 
+    {
+        return $this->hasMany('App\Models\BlogPost', 'author_id');
+    }
+
 }

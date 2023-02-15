@@ -23,6 +23,7 @@ class CreateBlogPostsTable extends Migration
             $table->text('summary');
             $table->text('content');
             $table->string('published');
+            $table->longText('thumbnail')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -18,7 +18,7 @@ class CreateProductsTable extends Migration
             $table->string('sku');
             $table->string('idsku');
             $table->string('product_name');
-            $table->string('product_description');
+            $table->text('product_description');
             
             $table->foreignId('supplier_id')->nullable()->index('fk_products_to_suppliers');
             // $table->foreign('supplier_id', 'fk_products_to_suppliers')->references('id')->on('suppliers')->onUpdate('CASCADE')->onDelete('CASCADE');

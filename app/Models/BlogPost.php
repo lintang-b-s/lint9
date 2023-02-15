@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BlogPost extends Model
 {
@@ -44,7 +45,7 @@ class BlogPost extends Model
         return $this->hasMany('App\Models\PostComment', 'post_id');
     }
 
-    
+    //
     public function post_category()
     {
         return $this->hasMany('App\Models\PostCategory', 'blog_post_id');

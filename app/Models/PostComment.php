@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PostComment extends Model
 {
@@ -27,5 +28,10 @@ class PostComment extends Model
     public function post()
     {
         return $this->belongsTo('App\Models\BlogPost', 'post_id', 'id');
+    }
+
+    public function author()
+    {
+        return $this->belongsTo('App\Models\User', 'author_id', 'user_id');
     }
 }

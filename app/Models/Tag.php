@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Tag extends Model
 {
@@ -26,5 +27,10 @@ class Tag extends Model
     public function post()
     {
         return $this->belongsToMany('App\Models\BlogPost');
+    }
+
+    public function post_tag()
+    {
+        return $this->hasMany('App\Models\PostTag', 'tag_id');
     }
 }

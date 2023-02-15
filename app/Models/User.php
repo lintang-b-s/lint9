@@ -187,4 +187,20 @@ class User extends BaseModel implements
         return $this->hasMany('App\Models\BlogPost', 'author_id');
     }
 
+    public function order()
+    {
+        return $this->hasMany('App\Models\Order', 'customer_id');
+    }
+
+    public function supplier()
+    {
+        return $this->hasOne('App\Models\Supplier', 'customer_id');
+    }
+
+    public function comment()
+    {
+        return $this->hasMany('App\Models\PostComment', 'author_id');
+    }
+
+
 }

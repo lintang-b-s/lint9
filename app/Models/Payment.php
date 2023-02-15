@@ -8,4 +8,22 @@ use Illuminate\Database\Eloquent\Model;
 class Payment extends Model
 {
     use HasFactory;
+
+    public $table = 'payment';
+
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
+
+    protected $fillable = [
+        'payment_type',
+        'allowed'
+    ];
+
+    public function order()
+    {
+        return $this->hasMany('App\Models\Order', 'payment_id');
+    }
 }

@@ -19,6 +19,7 @@ class PostCommentPolicy
     public function viewAny(User $user)
     {
         //
+        return true;
     }
 
     /**
@@ -31,6 +32,8 @@ class PostCommentPolicy
     public function view(User $user, PostComment $postComment)
     {
         //
+        return true;
+
     }
 
     /**
@@ -42,6 +45,8 @@ class PostCommentPolicy
     public function create(User $user)
     {
         //
+        return true;
+
     }
 
     /**
@@ -54,6 +59,7 @@ class PostCommentPolicy
     public function update(User $user, PostComment $postComment)
     {
         //
+        return $postComment->author_id === $user_id;
     }
 
     /**
@@ -66,6 +72,7 @@ class PostCommentPolicy
     public function delete(User $user, PostComment $postComment)
     {
         //
+        return $postComment->author_id === $user_id;
     }
 
     /**
@@ -78,6 +85,7 @@ class PostCommentPolicy
     public function restore(User $user, PostComment $postComment)
     {
         //
+        return false;
     }
 
     /**
@@ -90,5 +98,6 @@ class PostCommentPolicy
     public function forceDelete(User $user, PostComment $postComment)
     {
         //
+        return false;
     }
 }

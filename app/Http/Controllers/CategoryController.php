@@ -4,9 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Http\Resources\Category as CategoryResource;
 
 class CategoryController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')
+            ->only(['create', 'store', 'edit', 'update', 'destroy']);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,6 +22,7 @@ class CategoryController extends Controller
     public function index()
     {
         //
+        return CategoryResource::collection(Category::all());
     }
 
     /**
@@ -36,6 +44,11 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         //
+        $data = $request->all();
+
+        $category = Category::create($data);
+
+        return ($category)->response();
     }
 
     /**
@@ -47,6 +60,8 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         //
+
+        return new CategoryResource(Category::findOrFail($category));
     }
 
     /**
@@ -70,6 +85,12 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         //
+        $data = $request->all();
+        $category->update($data);
+
+        $category->post()->sync($request->input('post_id', []));
+
+        return ($category)->response();
     }
 
     /**
@@ -81,5 +102,10 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         //
+
+        $category->delete();
+
+        return redirect()->back()
+            ->withStatus('category was deleted!');
     }
 }

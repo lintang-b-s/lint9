@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\PostComment;
+namespace App\Http\Requests\Shipper;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCommentRequest extends FormRequest
+class StoreShipperRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,8 @@ class UpdateCommentRequest extends FormRequest
     public function rules()
     {
         return [
-            'post_id' => 'integer|required',
-            'title' => 'min:3|required|max:255',
-            'content' => 'min:3|required',
-            'author_id' => 'integer|required',
-            'published' => 'min:3|required|max:255'
+            'company_name' => 'min:3|required|max:255',
+            'phone' => 'min:3|required|max:255',
         ];
     }
 }

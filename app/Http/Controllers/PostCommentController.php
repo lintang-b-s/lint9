@@ -4,9 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\PostComment;
 use Illuminate\Http\Request;
+use App\Http\Resources\Comment as CommentResource;
 
 class PostCommentController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth')
+            ->only(['create', 'store', 'edit', 'update', 'destroy']);
+       
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,6 +24,7 @@ class PostCommentController extends Controller
     public function index()
     {
         //
+        return CommentResource::collection(PostComment::all());
     }
 
     /**
@@ -36,6 +46,13 @@ class PostCommentController extends Controller
     public function store(Request $request)
     {
         //
+
+        $data = $request->all();
+
+        $comment = PostComment::create($data);
+
+        return ($comment)
+            ->response();
     }
 
     /**
@@ -47,6 +64,8 @@ class PostCommentController extends Controller
     public function show(PostComment $postComment)
     {
         //
+
+        return new CommentResource(PostComment::findOrFail($postComment));
     }
 
     /**
@@ -70,6 +89,14 @@ class PostCommentController extends Controller
     public function update(Request $request, PostComment $postComment)
     {
         //
+
+        $comment = PostComment::findOrFail($postComment);
+
+        $this->authorize('post_comment.update',$comment);
+        $data = $request->all();
+        $postComment->update($data);
+        
+        return ($postComment)->response();
     }
 
     /**
@@ -81,5 +108,13 @@ class PostCommentController extends Controller
     public function destroy(PostComment $postComment)
     {
         //
+
+        $comment = PostComment::findOrFail($postComment);
+        $this->authorize('post_comment.delete',$comment);
+
+        $postComment->delete();
+
+        return redirect()->back()
+            ->withStatus('comment was deleted!');
     }
 }

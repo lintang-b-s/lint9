@@ -24,9 +24,11 @@ class StoreCommentRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'bail|min:2|required|unique:comments|max:255',
+            'post_id' => 'integer|required',
+            'title' => 'min:3|required|max:255',
             'content' => 'min:3|required',
-            'published' => 'min:2|required|max:255',
+            'author_id' => 'integer|required',
+            'published' => 'min:3|required|max:255'
         ];
     }
 }

@@ -91,7 +91,7 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
         $api->group(['prefix' => 'blog-posts'], function (Router $api) {
             $api->get('/', 'App\Http\Controllers\BlogPostController@getAll');
             $api->get('/{uuid}', 'App\Http\Controllers\BlogPostController@get');
-            $api->post('/', 'App\Http\Controllers\BlogPostController@post');
+            $api->post('/', 'App\Http\Controllers\BlogPostController@store');
             $api->patch('/{uuid}', 'App\Http\Controllers\BlogPostController@patch');
             $api->delete('/{uuid}', 'App\Http\Controllers\BlogPostController@delete');
         });

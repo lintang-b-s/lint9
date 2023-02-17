@@ -18,7 +18,7 @@ class CreateBlogPostsTable extends Migration
             $table->uuid('author_id');
             $table->foreign('author_id')->references('user_id')->on('users')->onUpdate('cascade')->onDelete('cascade');            
             $table->string('title');
-            $table->string('metaTitle');
+            $table->string('meta_title');
             $table->string('slug');
             $table->text('summary');
             $table->text('content');

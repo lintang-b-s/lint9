@@ -19,6 +19,7 @@ class BlogPostPolicy
     public function viewAny(User $user)
     {
         //
+        return true;
     }
 
     /**
@@ -31,6 +32,7 @@ class BlogPostPolicy
     public function view(User $user, BlogPost $blogPost)
     {
         //
+        return true;
     }
 
     /**
@@ -42,6 +44,7 @@ class BlogPostPolicy
     public function create(User $user)
     {
         //
+        return true;
     }
 
     /**
@@ -80,6 +83,7 @@ class BlogPostPolicy
     public function restore(User $user, BlogPost $blogPost)
     {
         //
+        return false;
     }
 
     /**
@@ -92,5 +96,6 @@ class BlogPostPolicy
     public function forceDelete(User $user, BlogPost $blogPost)
     {
         //
+        return false;
     }
 }

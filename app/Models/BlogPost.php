@@ -10,10 +10,12 @@ class BlogPost extends Model
 {
     use SoftDeletes;
 
-    public $table = 'blog_post';
+    public $table = 'blog_posts';
 
     protected $fillable = ['author_id', 'title'
-    , 'metaTitle', 'slug', 'summary', 'content','published'];
+    , 
+    'meta_title',
+     'slug', 'summary', 'content','published', 'thumbnail'];
 
     protected $dates = [
         'created_at',
@@ -54,6 +56,13 @@ class BlogPost extends Model
     public function category()
     {
         return $this->belongsToMany('App\Models\PostCategory');
+    }
+
+    public function scopeMostComment(Builder $query) 
+    {
+        return $query->latest()
+            ->withCount('post_comment')
+            ->with('author');
     }
     
 }

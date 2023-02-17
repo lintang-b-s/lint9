@@ -11,6 +11,8 @@ class Tag extends Model
     // use HasFactory;
     use SoftDeletes;
 
+    public $table = 'tag';
+
     protected $dates = [
         'created_at',
         'updated_at',

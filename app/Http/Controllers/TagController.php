@@ -4,9 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use App\Http\Resources\Tag as TagResource;
 
 class TagController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth')
+            ->only(['create', 'store', 'edit', 'update', 'destroy']);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +22,7 @@ class TagController extends Controller
      */
     public function index()
     {
-        //
+        return TagResource::collection(Tag::all());
     }
 
     /**
@@ -35,7 +43,12 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+
+        $tag = Tag::create($data);
+
+        return ($tag)
+            ->response();
     }
 
     /**
@@ -46,7 +59,7 @@ class TagController extends Controller
      */
     public function show(Tag $tag)
     {
-        //
+        return new TagResource(Tag::findOrFail($tag));
     }
 
     /**
@@ -69,7 +82,14 @@ class TagController extends Controller
      */
     public function update(Request $request, Tag $tag)
     {
-        //
+        // $tagAuth = Tag::findOrFail($tag);
+
+        // $this->authorize('tag.update',$tag);
+        $data = $request->all();
+        $tag->update($data);
+        $tag->post()->sync($request->input('post_id', []));
+
+        return ($tag)->response();
     }
 
     /**
@@ -80,6 +100,10 @@ class TagController extends Controller
      */
     public function destroy(Tag $tag)
     {
-        //
+        
+        $tag->delete();
+
+        return redirect()->back()
+            ->withStatus('tag was deleted!');
     }
 }

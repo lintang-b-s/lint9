@@ -19,6 +19,7 @@ class TagPolicy
     public function viewAny(User $user)
     {
         //
+        return true;
     }
 
     /**
@@ -31,6 +32,7 @@ class TagPolicy
     public function view(User $user, Tag $tag)
     {
         //
+        return true;
     }
 
     /**
@@ -42,6 +44,7 @@ class TagPolicy
     public function create(User $user)
     {
         //
+        return true;
     }
 
     /**
@@ -54,6 +57,7 @@ class TagPolicy
     public function update(User $user, Tag $tag)
     {
         //
+        return true;
     }
 
     /**
@@ -66,6 +70,7 @@ class TagPolicy
     public function delete(User $user, Tag $tag)
     {
         //
+        return true;
     }
 
     /**
@@ -78,6 +83,7 @@ class TagPolicy
     public function restore(User $user, Tag $tag)
     {
         //
+        return true;
     }
 
     /**
@@ -90,5 +96,6 @@ class TagPolicy
     public function forceDelete(User $user, Tag $tag)
     {
         //
+        return true;
     }
 }

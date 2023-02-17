@@ -85,10 +85,18 @@ class BlogPostController extends Controller
         }
 
         $blogPost = BlogPost::create($data);
+    
 
-        // return redirect()->back()
-        //     ->withStatus('Blog Post was created!');
+        if ($request->filled('category_id')) {
+            $blogPost->category()->attach($request->input('category_id', []));
+        }
+        if ($request->filled('tag_id'))
+        {
+            $blogPost->tag()->attach($request->input('tag_id', []));
+        }
 
+
+    
         return response()->json(['data' => $blogPost]);
     }
 
@@ -100,7 +108,8 @@ class BlogPostController extends Controller
      */
     public function show(BlogPost $blogPost)
     {
-        return new PostResource(BlogPost::findOrFail($blogPost));
+       
+        return new PostResource(BlogPost::findOrFail($blogPost->id));
     }
 
     /**
@@ -123,10 +132,9 @@ class BlogPostController extends Controller
      */
     public function update(Request $request, BlogPost $blogPost)
     {
-        $post = BlogPost::findOrFail($id);
 
-        $this->authorize('blog_post.update',$post);
-
+        $this->authorize($blogPost);
+        
         $data = $request->all();
 
         if(isset($data['thumbnail'])){
@@ -148,12 +156,19 @@ class BlogPostController extends Controller
            }
 
        }
-
+     
         $blogPost->update($data);
-        $blogPost->tag()->sync($request->input('tag_id', []));
-        $blogPost->category()->sync($request->input('category_id', []));
 
-        return  response()->json(['data' => $blogPost]);       
+        if ($request->filled('category_id')) {
+            $blogPost->category()->sync($request->input('category_id', []));
+        }
+        if ($request->filled('tag_id'))
+        {
+            $blogPost->tag()->sync($request->input('tag_id', []));
+        }
+        
+        
+        return  response()->json(['data' =>  new PostResource($blogPost->refresh())]);       
     }
 
     /**
@@ -164,10 +179,10 @@ class BlogPostController extends Controller
      */
     public function destroy(BlogPost $blogPost)
     {
-        $post = BlogPost::findOrFail($id);
 
-       $this->authorize('blog_post.delete',$post);
+       $this->authorize($blogPost);
 
+       
         $get_item = $blogPost['thumbnail'];
 
         $data = 'storage/'.$get_item;
@@ -178,10 +193,9 @@ class BlogPostController extends Controller
             File::delete('storage/app/public/'.$get_item);
         };
 
-        $blogPost->delete();
+        $blogPost->forceDelete();
 
         
-        return redirect()->back()
-            ->withStatus('Post was deleted!');
+        return response()->json(['message' => 'post was succesfuly deleted']);
     }
 }

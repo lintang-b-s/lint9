@@ -11,6 +11,8 @@ class PostTag extends Model
     // use HasFactory;
     use SoftDeletes;
 
+    public $table = 'post_tags';
+
     protected $dates = [
         'created_at',
         'updated_at',

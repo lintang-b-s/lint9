@@ -10,7 +10,7 @@ class PostComment extends Model
 {
     use SoftDeletes;
 
-    public $table = 'post_comment';
+    public $table = 'post_comments';
 
     protected $fillable = [
         'post_id',

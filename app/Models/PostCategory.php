@@ -9,6 +9,7 @@ class PostCategory extends Model
 {
     use HasFactory;
 
+    public $table = 'post_categories';
     protected $dates = [
         'created_at',
         'updated_at',

@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class BlogPost extends Model
 {
@@ -32,7 +34,7 @@ class BlogPost extends Model
     //
     public function tag()
     {
-        return $this->belongsToMany('App\Models\Tag');
+        return $this->belongsToMany('App\Models\Tag', 'post_tags', 'blog_post_id', 'tag_id');
     }
 
 
@@ -48,15 +50,17 @@ class BlogPost extends Model
     }
 
     //
+    public function category()
+    {
+        return $this->belongsToMany('App\Models\Category', 'post_categories', 'blog_post_id', 'category_id');
+    }
+
     public function post_category()
     {
         return $this->hasMany('App\Models\PostCategory', 'blog_post_id');
     }
 
-    public function category()
-    {
-        return $this->belongsToMany('App\Models\PostCategory');
-    }
+    
 
     public function scopeMostComment(Builder $query) 
     {

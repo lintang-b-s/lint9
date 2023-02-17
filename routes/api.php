@@ -44,9 +44,12 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
         $api->get('/', 'App\Http\Controllers\UserController@getAll');
         $api->get('/{uuid}', 'App\Http\Controllers\UserController@get');
         $api->post('/', 'App\Http\Controllers\UserController@post');
-        $api->put('/{uuid}', 'App\Http\Controllers\UserController@put');
-        $api->patch('/{uuid}', 'App\Http\Controllers\UserController@patch');
-        $api->delete('/{uuid}', 'App\Http\Controllers\UserController@delete');
+
+    });
+
+    $api->group(['prefix' => 'blog-posts'], function (Router $api) {
+        $api->get('/', 'App\Http\Controllers\BlogPostController@index');
+        $api->get('/{blogPost}', 'App\Http\Controllers\BlogPostController@show');
     });
 
     /*
@@ -68,14 +71,14 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
         /*
          * Users
          */
-        // $api->group(['prefix' => 'users', 'middleware' => 'check_role:admin'], function (Router $api) {
-        //     $api->get('/', 'App\Http\Controllers\UserController@getAll');
-        //     $api->get('/{uuid}', 'App\Http\Controllers\UserController@get');
-        //     $api->post('/', 'App\Http\Controllers\UserController@post');
-        //     $api->put('/{uuid}', 'App\Http\Controllers\UserController@put');
-        //     $api->patch('/{uuid}', 'App\Http\Controllers\UserController@patch');
-        //     $api->delete('/{uuid}', 'App\Http\Controllers\UserController@delete');
-        // });
+        $api->group(['prefix' => 'users', 'middleware' => 'check_role:admin'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\UserController@getAll');
+            $api->get('/{uuid}', 'App\Http\Controllers\UserController@get');
+            // $api->post('/', 'App\Http\Controllers\UserController@post');
+            $api->put('/{uuid}', 'App\Http\Controllers\UserController@put');
+            $api->patch('/{uuid}', 'App\Http\Controllers\UserController@patch');
+            $api->delete('/{uuid}', 'App\Http\Controllers\UserController@delete');
+        });
 
         /*
          * Roles
@@ -89,11 +92,9 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
         * BlogPosts
         */
         $api->group(['prefix' => 'blog-posts'], function (Router $api) {
-            $api->get('/', 'App\Http\Controllers\BlogPostController@getAll');
-            $api->get('/{uuid}', 'App\Http\Controllers\BlogPostController@get');
             $api->post('/', 'App\Http\Controllers\BlogPostController@store');
-            $api->patch('/{uuid}', 'App\Http\Controllers\BlogPostController@patch');
-            $api->delete('/{uuid}', 'App\Http\Controllers\BlogPostController@delete');
+            $api->put('/{blogPost}', 'App\Http\Controllers\BlogPostController@update');
+            $api->delete('/{blogPost}', 'App\Http\Controllers\BlogPostController@destroy');
         });
 
 

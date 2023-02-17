@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies\..\Models\Policies;
+namespace App\Models\Policies;
 
 use App\Models\PostComment;
 use App\Models\User;
@@ -59,7 +59,7 @@ class PostCommentPolicy
     public function update(User $user, PostComment $postComment)
     {
         //
-        return $postComment->author_id === $user_id;
+        return $postComment->author_id === $user->user_id;
     }
 
     /**
@@ -72,7 +72,7 @@ class PostCommentPolicy
     public function delete(User $user, PostComment $postComment)
     {
         //
-        return $postComment->author_id === $user_id;
+        return $postComment->author_id === $user->user_id;
     }
 
     /**
@@ -85,7 +85,7 @@ class PostCommentPolicy
     public function restore(User $user, PostComment $postComment)
     {
         //
-        return false;
+        return true;
     }
 
     /**
@@ -98,6 +98,6 @@ class PostCommentPolicy
     public function forceDelete(User $user, PostComment $postComment)
     {
         //
-        return false;
+        return true;
     }
 }

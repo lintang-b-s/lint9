@@ -97,7 +97,7 @@ class BlogPostController extends Controller
 
 
     
-        return response()->json(['data' => $blogPost]);
+        return response()->json(['data' => new PostResource($blogPost)]);
     }
 
     /**
@@ -133,7 +133,7 @@ class BlogPostController extends Controller
     public function update(Request $request, BlogPost $blogPost)
     {
 
-        $this->authorize($blogPost);
+        $this->authorize('',$blogPost);
         
         $data = $request->all();
 

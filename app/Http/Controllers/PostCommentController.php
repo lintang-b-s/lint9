@@ -5,6 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\PostComment;
 use Illuminate\Http\Request;
 use App\Http\Resources\Comment as CommentResource;
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\PostComment\StorePostCommentRequest;
+
+
+
+use Dingo\Api\Exception\DeleteResourceFailedException;
+use Dingo\Api\Exception\ResourceException;
+use Dingo\Api\Exception\StoreResourceFailedException;
+use Dingo\Api\Exception\UpdateResourceFailedException;
+use File;
 
 class PostCommentController extends Controller
 {
@@ -43,16 +54,19 @@ class PostCommentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePostCommentRequest $request)
     {
-        //
-
+       
+        $user = app('Dingo\Api\Auth\Auth')->user();
+   
         $data = $request->all();
+        $data['author_id'] = $user->user_id;
+        
+     
 
         $comment = PostComment::create($data);
 
-        return ($comment)
-            ->response();
+        return response()->json(['data' => new CommentResource($comment)]);
     }
 
     /**
@@ -64,8 +78,8 @@ class PostCommentController extends Controller
     public function show(PostComment $postComment)
     {
         //
-
-        return new CommentResource(PostComment::findOrFail($postComment));
+        // dd($postComment->id);
+        return new CommentResource(PostComment::findOrFail($postComment->id));
     }
 
     /**
@@ -88,15 +102,12 @@ class PostCommentController extends Controller
      */
     public function update(Request $request, PostComment $postComment)
     {
-        //
-
-        $comment = PostComment::findOrFail($postComment);
-
-        $this->authorize('post_comment.update',$comment);
+        
+        $this->authorize('post_comment.update',$postComment);
         $data = $request->all();
         $postComment->update($data);
         
-        return ($postComment)->response();
+        return response()->json(['data'=> new CommentResource($postComment->refresh())]);
     }
 
     /**
@@ -109,10 +120,9 @@ class PostCommentController extends Controller
     {
         //
 
-        $comment = PostComment::findOrFail($postComment);
-        $this->authorize('post_comment.delete',$comment);
+        $this->authorize('post_comment.delete',$postComment);
 
-        $postComment->delete();
+        $postComment->forceDelete();
 
         return redirect()->back()
             ->withStatus('comment was deleted!');

@@ -16,6 +16,7 @@ class PostComment extends Model
         'post_id',
         'title',
         'content',
+        'author_id',
         'published',
     ];
 

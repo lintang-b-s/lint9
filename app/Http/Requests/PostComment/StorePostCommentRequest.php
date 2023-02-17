@@ -3,6 +3,9 @@
 namespace App\Http\Requests\PostComment;
 
 use Illuminate\Foundation\Http\FormRequest;
+// use Dingo\Api\Http\FormRequest;
+use App\Models\PostComment;
+
 
 class StorePostCommentRequest extends FormRequest
 {
@@ -25,9 +28,8 @@ class StorePostCommentRequest extends FormRequest
     {
         return [
             'post_id' => 'integer|required',
-            'title' => 'min:3|required|max:255',
+            'title' => 'min:3|required|unique:post_comments|max:255',
             'content' => 'min:3|required',
-            'author_id' => 'integer|required',
             'published' => 'min:3|required|max:255'
 
         ];

@@ -102,11 +102,11 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
         * PostComments
         */
         $api->group(['prefix' => 'post-comments'], function (Router $api) {
-            $api->get('/', 'App\Http\Controllers\PostCommentController@getAll');
-            $api->get('/{uuid}', 'App\Http\Controllers\PostCommentController@get');
-            $api->post('/', 'App\Http\Controllers\PostCommentController@post');
-            $api->patch('/{uuid}', 'App\Http\Controllers\PostCommentController@patch');
-            $api->delete('/{uuid}', 'App\Http\Controllers\PostCommentController@delete');
+            $api->get('/', 'App\Http\Controllers\PostCommentController@index');
+            $api->get('/{postComment}', 'App\Http\Controllers\PostCommentController@show');
+            $api->post('/', 'App\Http\Controllers\PostCommentController@store');
+            $api->put('/{postComment}', 'App\Http\Controllers\PostCommentController@update');
+            $api->delete('/{postComment}', 'App\Http\Controllers\PostCommentController@destroy');
         });
 
         /*

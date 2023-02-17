@@ -32,8 +32,8 @@ class AuthServiceProvider extends ServiceProvider
         'App\Models\Policies\TagPolicy');
 
         Gate::resource('post_comment',
-        'App\Models\Policies\PostCommentPolicy'
-    );
+        'App\Models\Policies\PostCommentPolicy');
+        
 
         // Gate::resource('blog_post',
         // 'App\')

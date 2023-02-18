@@ -3,7 +3,11 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\User as UserResource;
+use App\Http\Resources\Tag as TagResource;
+use App\Http\Resources\Category as CategoryResource;
 use App\Http\Resources\PostUser as PostUserResource;
+use App\Http\Resources\Comment as CommentResource;
 
 class Post extends JsonResource
 {
@@ -28,8 +32,11 @@ class Post extends JsonResource
             'author_id' => $this->author_id,
             'created_at' => (string)$this->created_at,
             'updated_at' => (string)$this->updated_at,
-            'author' => new PostUserResource($this->whenLoaded('user'))
-
+            'author' => new PostUserResource($this->whenLoaded('user')),
+            'post_comment' => CommentResource::collection($this->whenLoaded('post_comment')),
+            'author' => new UserResource($this->whenLoaded('author')),
+            'tag' =>  TagResource::collection($this->whenLoaded('tag')),
+            'category' =>  CategoryResource::collection($this->whenLoaded('category')),
         ];
     }
 }

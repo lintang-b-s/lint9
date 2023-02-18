@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+use App\Http\Requests\PostCategories\UpdateCategoryRequest;
+use App\Http\Requests\PostCategories\StoreCategoryRequest;
+
 use App\Http\Resources\Category as CategoryResource;
 
 class CategoryController extends Controller
@@ -41,14 +46,15 @@ class CategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        //
+        
         $data = $request->all();
+        
 
         $category = Category::create($data);
 
-        return ($category)->response();
+        return response()->json(['data' =>  new CategoryResource($category)]);
     }
 
     /**
@@ -59,9 +65,7 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        //
-
-        return new CategoryResource(Category::findOrFail($category));
+        return new CategoryResource($category->load('post'));
     }
 
     /**
@@ -82,15 +86,17 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
-        //
+        $this->authorize('categories.update',$category);
         $data = $request->all();
         $category->update($data);
 
-        $category->post()->sync($request->input('post_id', []));
+        if ($request->filled('post_id')) {
+            $category->post()->sync($request->input('post_id', []));
+        }
 
-        return ($category)->response();
+        return response()->json(['data' => new  CategoryResource($category->refresh())]);
     }
 
     /**
@@ -103,9 +109,10 @@ class CategoryController extends Controller
     {
         //
 
-        $category->delete();
+        $this->authorize('categories.delete',$category);
+        $category->forceDelete();
 
-        return redirect()->back()
-            ->withStatus('category was deleted!');
+        return response()->json(['message' => 'category was successfully deleted!']);
+
     }
 }

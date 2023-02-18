@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use App\Http\Requests\Tag\StoreTagRequest;
+use App\Http\Requests\Tag\UpdateTagRequest;
+
+
 use App\Http\Resources\Tag as TagResource;
 
 class TagController extends Controller
@@ -41,14 +45,13 @@ class TagController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreTagRequest $request)
     {
         $data = $request->all();
 
         $tag = Tag::create($data);
 
-        return ($tag)
-            ->response();
+        return response()->json(['data' => new TagResource($tag)]);
     }
 
     /**
@@ -59,7 +62,8 @@ class TagController extends Controller
      */
     public function show(Tag $tag)
     {
-        return new TagResource(Tag::findOrFail($tag));
+       
+        return new TagResource($tag->load('post'));
     }
 
     /**
@@ -80,16 +84,19 @@ class TagController extends Controller
      * @param  \App\Models\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Tag $tag)
+    public function update(UpdateTagRequest $request, Tag $tag)
     {
-        // $tagAuth = Tag::findOrFail($tag);
+      
 
-        // $this->authorize('tag.update',$tag);
         $data = $request->all();
         $tag->update($data);
-        $tag->post()->sync($request->input('post_id', []));
 
-        return ($tag)->response();
+        if ($request->filled('post_id')) {
+            $post = json_decode($request->input('post_id', []), true);
+            $tag->post()->sync($post);
+        }
+
+        return response()->json(['data' => new TagResource($tag->refresh())]);
     }
 
     /**

@@ -35,7 +35,7 @@ class PostCommentController extends Controller
     public function index()
     {
         //
-        return CommentResource::collection(PostComment::all());
+        return CommentResource::collection(PostComment::all()->load('author'));
     }
 
     /**
@@ -79,7 +79,8 @@ class PostCommentController extends Controller
     {
         //
         // dd($postComment->id);
-        return new CommentResource(PostComment::findOrFail($postComment->id));
+        // return new CommentResource(PostComment::findOrFail($postComment->id));
+        return new CommentResource($postComment->load('author'));
     }
 
     /**

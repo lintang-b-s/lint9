@@ -52,6 +52,20 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
         $api->get('/{blogPost}', 'App\Http\Controllers\BlogPostController@show');
     });
 
+
+    $api->group(['prefix' => 'categories'], function (Router $api) {
+        $api->get('/', 'App\Http\Controllers\CategoryController@index');
+        $api->get('/{category}', 'App\Http\Controllers\CategoryController@show');
+     
+    });
+
+    $api->group(['prefix' => 'tags'], function (Router $api) {
+        $api->get('/', 'App\Http\Controllers\TagController@index');
+        $api->get('/{tag}', 'App\Http\Controllers\TagController@show');
+      
+    });
+
+
     /*
      * Authenticated routes
      */
@@ -113,11 +127,10 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
         * Tags
         */
         $api->group(['prefix' => 'tags'], function (Router $api) {
-            $api->get('/', 'App\Http\Controllers\TagController@getAll');
-            $api->get('/{uuid}', 'App\Http\Controllers\TagController@get');
-            $api->post('/', 'App\Http\Controllers\TagController@post');
-            $api->patch('/{uuid}', 'App\Http\Controllers\TagController@patch');
-            $api->delete('/{uuid}', 'App\Http\Controllers\TagController@delete');
+   
+            $api->post('/', 'App\Http\Controllers\TagController@store');
+            $api->put('/{tag}', 'App\Http\Controllers\TagController@update');
+            $api->delete('/{tag}', 'App\Http\Controllers\TagController@destroy');
         });
 
         /*
@@ -135,22 +148,20 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
         * Categories
         */
         $api->group(['prefix' => 'categories'], function (Router $api) {
-            $api->get('/', 'App\Http\Controllers\CategoryController@getAll');
-            $api->get('/{uuid}', 'App\Http\Controllers\CategoryController@get');
-            $api->post('/', 'App\Http\Controllers\CategoryController@post');
-            $api->patch('/{uuid}', 'App\Http\Controllers\CategoryController@patch');
-            $api->delete('/{uuid}', 'App\Http\Controllers\CategoryController@delete');
+            $api->post('/', 'App\Http\Controllers\CategoryController@store');
+            $api->put('/{category}', 'App\Http\Controllers\CategoryController@update');
+            $api->delete('/{category}', 'App\Http\Controllers\CategoryController@destroy');
         });
 
         /*
         * PostCategories
         */
         $api->group(['prefix' => 'post-categories'], function (Router $api) {
-            $api->get('/', 'App\Http\Controllers\PostCategoryController@getAll');
-            $api->get('/{uuid}', 'App\Http\Controllers\PostCategoryController@get');
-            $api->post('/', 'App\Http\Controllers\PostCategoryController@post');
-            $api->patch('/{uuid}', 'App\Http\Controllers\PostCategoryController@patch');
-            $api->delete('/{uuid}', 'App\Http\Controllers\PostCategoryController@delete');
+            $api->get('/', 'App\Http\Controllers\PostCategoryController@index');
+            $api->get('/{uuid}', 'App\Http\Controllers\PostCategoryController@show');
+            $api->post('/', 'App\Http\Controllers\PostCategoryController@store');
+            $api->put('/{uuid}', 'App\Http\Controllers\PostCategoryController@update');
+            $api->delete('/{uuid}', 'App\Http\Controllers\PostCategoryController@destroy');
         });
         
         /*

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies\..\Models\Policies;
+namespace App\Models\Policies;
 
 use App\Models\PostCategory;
 use App\Models\User;
@@ -19,6 +19,7 @@ class PostCategoryPolicy
     public function viewAny(User $user)
     {
         //
+        return true;
     }
 
     /**
@@ -31,6 +32,7 @@ class PostCategoryPolicy
     public function view(User $user, PostCategory $postCategory)
     {
         //
+        return true;
     }
 
     /**
@@ -42,6 +44,7 @@ class PostCategoryPolicy
     public function create(User $user)
     {
         //
+        return true;
     }
 
     /**
@@ -53,7 +56,8 @@ class PostCategoryPolicy
      */
     public function update(User $user, PostCategory $postCategory)
     {
-        //
+        return $user->is_admin == true;
+
     }
 
     /**
@@ -65,7 +69,7 @@ class PostCategoryPolicy
      */
     public function delete(User $user, PostCategory $postCategory)
     {
-        //
+        return $user->is_admin == true;
     }
 
     /**
@@ -77,7 +81,7 @@ class PostCategoryPolicy
      */
     public function restore(User $user, PostCategory $postCategory)
     {
-        //
+        return true;
     }
 
     /**
@@ -89,6 +93,7 @@ class PostCategoryPolicy
      */
     public function forceDelete(User $user, PostCategory $postCategory)
     {
-        //
+        return true;
+
     }
 }

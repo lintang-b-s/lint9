@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies\..\Models\Policies;
+namespace App\Models\Policies;
 
 use App\Models\Tag;
 use App\Models\User;
@@ -44,7 +44,7 @@ class TagPolicy
     public function create(User $user)
     {
         //
-        return true;
+        return $user->is_admin == true;
     }
 
     /**
@@ -57,7 +57,7 @@ class TagPolicy
     public function update(User $user, Tag $tag)
     {
         //
-        return true;
+        return $user->is_admin == true;
     }
 
     /**
@@ -70,7 +70,7 @@ class TagPolicy
     public function delete(User $user, Tag $tag)
     {
         //
-        return true;
+        return $user->is_admin == true;
     }
 
     /**

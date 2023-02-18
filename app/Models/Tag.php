@@ -21,14 +21,14 @@ class Tag extends Model
 
     protected $fillable = [
         'title',
-        'metaTitle',
+        'meta_title',
         'slug',
         'content',
     ];
 
     public function post()
     {
-        return $this->belongsToMany('App\Models\BlogPost');
+        return $this->belongsToMany('App\Models\BlogPost', 'post_tags', 'tag_id', 'blog_post_id');
     }
 
     public function post_tag()

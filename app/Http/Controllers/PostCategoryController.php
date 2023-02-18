@@ -2,11 +2,25 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Models\PostCategory;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+use App\Http\Resources\PostCategory as PostCategoryResource;
+
+use App\Http\Requests\PostCategories\UpdatePostCategoryRequest;
+use App\Http\Requests\PostCategories\StorePostCategoryRequest;
+
 
 class PostCategoryController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')
+            ->only(['create', 'store', 'edit', 'update', 'destroy']);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -33,9 +47,14 @@ class PostCategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePostCategoryRequest $request)
     {
-        //
+        $data = $request->all();
+        
+
+        $category = PostCategory::create($data);
+
+        return response()->json(['data' =>  new PostCategoryResource($category)]);
     }
 
     /**
@@ -62,12 +81,11 @@ class PostCategoryController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
+     *1 qqq q   qws   * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\PostCategory  $postCategory
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PostCategory $postCategory)
+    public function update(UpdatePostCategoryRequest $request, PostCategory $postCategory)
     {
         //
     }

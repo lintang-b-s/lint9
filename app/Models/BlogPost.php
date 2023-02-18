@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+
 use Illuminate\Database\Eloquent\SoftDeletes;
+// use App\Models\PostComment;
 
 
 class BlogPost extends Model
@@ -43,7 +45,6 @@ class BlogPost extends Model
         return $this->hasMany('App\Models\PostTag', 'blog_post_id');
     }
 
-    //
     public function post_comment()
     {
         return $this->hasMany('App\Models\PostComment', 'post_id');
@@ -68,5 +69,10 @@ class BlogPost extends Model
             ->withCount('post_comment')
             ->with('author');
     }
+
+    // public function scopeFilter(Builder $query)
+    // {
+    //     return $query
+    // }
     
 }

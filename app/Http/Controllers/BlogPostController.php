@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BlogPost;
+use App\Models\PostComment;
 use Illuminate\Http\Request;
 use App\Http\Resources\Post as PostResource;
 use Illuminate\Support\Facades\Storage;
@@ -10,6 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\Post\UpdatePostRequest;
+use Illuminate\Database\Eloquent\Builder;
+
 
 use Dingo\Api\Exception\DeleteResourceFailedException;
 use Dingo\Api\Exception\ResourceException;
@@ -34,7 +37,28 @@ class BlogPostController extends Controller
     {
         //
 
-        return PostResource::collection(BlogPost::mostComment()->get());
+        // return PostResource::collection(BlogPost::mostComment()->paginate(20));
+        $query = BlogPost::query()->with('author')->with('tag')->with('category');
+
+        // $filter = request('filter');
+
+        // [$criteria, $value] = explode(':', $filter);
+        // dd($query);
+
+        $query->when(request()->filled('filter'), function ($query) {
+            $filters = explode(',', request('filter'));
+
+            foreach ($filters as $filter) {
+                [$criteria, $value] = explode(':', $filter);
+                $query->whereHas($criteria , function (Builder $query) use ($value, $criteria){
+                    $query->where('title' , $value);
+                });
+            }
+
+            return $query;
+         });
+
+         return PostResource::collection($query->paginate(20));
     }
 
     /**
@@ -53,7 +77,7 @@ class BlogPostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
         //
        
@@ -88,11 +112,15 @@ class BlogPostController extends Controller
     
 
         if ($request->filled('category_id')) {
-            $blogPost->category()->attach($request->input('category_id', []));
+           
+            $category_id = json_decode($request->input('category_id', []), true);
+            
+            $blogPost->category()->attach($category_id);
         }
         if ($request->filled('tag_id'))
         {
-            $blogPost->tag()->attach($request->input('tag_id', []));
+            $tag_id = json_decode($request->input('tag_id', []), true);
+            $blogPost->tag()->attach($tag_id);
         }
 
 
@@ -109,7 +137,7 @@ class BlogPostController extends Controller
     public function show(BlogPost $blogPost)
     {
        
-        return new PostResource(BlogPost::findOrFail($blogPost->id));
+        return new PostResource($blogPost->load('post_comment'));
     }
 
     /**
@@ -130,7 +158,7 @@ class BlogPostController extends Controller
      * @param  \App\Models\BlogPost  $blogPost
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, BlogPost $blogPost)
+    public function update(UpdatePostRequest $request, BlogPost $blogPost)
     {
 
         $this->authorize('',$blogPost);
@@ -160,11 +188,13 @@ class BlogPostController extends Controller
         $blogPost->update($data);
 
         if ($request->filled('category_id')) {
-            $blogPost->category()->sync($request->input('category_id', []));
+            $category_id = json_decode($request->input('category_id', []), true);
+            $blogPost->category()->sync($category_id);
         }
         if ($request->filled('tag_id'))
         {
-            $blogPost->tag()->sync($request->input('tag_id', []));
+            $tag_id = json_decode($request->input('tag_id', []), true);
+            $blogPost->tag()->sync($tag_id);
         }
         
         

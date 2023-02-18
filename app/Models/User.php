@@ -92,8 +92,7 @@ class User extends BaseModel implements
             'email' => 'email|max:255|unique:users',
             'name'  => 'required|min:3',
             'password' => 'required|min:6',
-            "is_admin" => 'required',
-            "address" => 'required',
+      
             "phone" => 'required'
         ];
     }
@@ -162,10 +161,11 @@ class User extends BaseModel implements
      */
     public function getJWTCustomClaims()
     {
+    
         return [
             'user' => [
                 'id' => $this->getKey(),
-                'name' => $this->name,
+                'name' => $this->name ,
                 'primaryRole' => $this->primaryRole->name,
             ],
         ];
@@ -202,5 +202,30 @@ class User extends BaseModel implements
         return $this->hasMany('App\Models\PostComment', 'author_id');
     }
 
+    public function product_review()
+    {
+        return $this->hasMany('App\Models\ProductReview', 'customer_id');
+    }
+    
+    public function address()
+    {
+        return $this->hasMany('App\Models\UserAddress', 'user_id');
+    }
 
+    public function payment()
+    {
+        return $this->hasMany('App\Models\UserPayment', 'user_id');
+    }
+
+    public function role()
+    {
+        return $this->belongsToMany('App\Models\Role', 'user_roles', 'user_id', 'role_id');
+    }
+
+    public function user_role()
+    {
+        return $this->hasMany('App\Models\RoleUser', 'user_id');
+    }
+
+    
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddForeignKeysToOrders extends Migration
+class AddForeignKeysToOrdersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,7 @@ class AddForeignKeysToOrders extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             //
-            $table->foreign('shipper_id', 'fk_payments_to_shippers')->references('id')->on('shippers')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign('shipper_id', 'fk_orders_to_shippers')->references('id')->on('shippers')->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->foreign('payment_id', 'fk_orders_to_payments')->references('id')->on('payments')->onUpdate('CASCADE')->onDelete('CASCADE');
 
         });
@@ -29,7 +29,9 @@ class AddForeignKeysToOrders extends Migration
     public function down()
     {
         Schema::table('orders', function (Blueprint $table) {
-            //
+            $table->dropForeign('fk_orders_to_shippers');
+            $table->dropForeign('fk_orders_to_payments');
+
         });
     }
 }

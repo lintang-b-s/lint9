@@ -15,26 +15,38 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+        
             $table->uuid('customer_id');
             $table->foreign('customer_id')->references('user_id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->integer('order_number');
-            // $table->uuid('payment_id')
-            $table->foreignId('payment_id')->nullable()->index('fk_orders_to_payments');
-            // $table->foreign('payment_id', 'fk_orders_to_payments')->references('id')->on('payments')->onUpdate('CASCADE')->onDelete('CASCADE');
-
+            $table->string('sessionId');
+            $table->string('content');
+            $table->string('type');
+            $table->string('token');
+            $table->string('status');
+            $table->float('subTotal');
+            $table->float('itemDiscount');
+            $table->float('tax');
+            $table->float('shipping');
+            $table->float('total');
+            $table->float('discount');
+            $table->float('grandTotal');
+            $table->string('name');
+            $table->string('email');
+            $table->string('phone');
+            $table->string('address_line');
+            $table->string('city');
+            $table->string('postal_code');
+            $table->string('country');
             $table->dateTime('order_date');
             $table->dateTime('payment_date')->nullable();
-            $table->dateTime('ship_date')->nullable();
-            $table->dateTime('delivered_date')->nullable();
-            $table->dateTime('cancel_date')->nullable();
-            $table->dateTime('return_date')->nullable();
-            $table->string('return_reason')->nullable();
+            $table->dateTime('required_date')->nullable();
+            $table->foreignId('payment_id')->nullable()->index('fk_orders_to_payments');
 
-            $table->foreignId('shipper_id')->nullable()->index('fk_payments_to_shippers');
-            // $table->foreign('shipper_id', 'fk_payments_to_shippers')->references('id')->on('shippers')->onUpdate('CASCADE')->onDelete('CASCADE');
+
+            $table->foreignId('shipper_id')->nullable()->index('fk_orders_to_shippers');
+            // $table->foreign('shipper_id', 'fk_orders_to_shippers')->references('id')->on('shippers')->onUpdate('CASCADE')->onDelete('CASCADE');
 
             $table->string('freight')->nullable();
-            $table->enum('status', ['Cancel', 'Paid', 'Pending']);
 
 
 

@@ -9,7 +9,7 @@ class Shipper extends Model
 {
     use HasFactory;
 
-    public $table = 'shipper';
+    public $table = 'shippers';
 
     protected $dates = [
         'created_at',

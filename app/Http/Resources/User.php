@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Role as RoleResource;
 
 class User extends JsonResource
 {
@@ -19,10 +20,10 @@ class User extends JsonResource
             'user_id' => $this->user_id,
             'name' => $this->name,
             'email' => $this->email,
-            'is_admin' => $this->is_admin,
-            'address' => $this->address,
+            'role' => RoleResource::collection($this->whenLoaded('role')),
+            
             'phone' => $this->phone,
-            'credit_card_type' => $this->credit_card_type
+          
         ];
     }
 }

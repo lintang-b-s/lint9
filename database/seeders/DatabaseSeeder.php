@@ -24,8 +24,16 @@ class DatabaseSeeder extends Seeder
         $this->call(OrdersSeeder::class);
         $this->call(ShippersSeeder::class);
         $this->call(PaymentsSeeder::class);
-        $this->call(OrderDetailsSeeder::class);
         $this->call(ProductsSeeder::class);
         $this->call(SuppliersSeeder::class);
+        $this->call(UserPaymentsSeeder::class);
+        $this->call(UserAddressesSeeder::class);
+        $this->call(DiscountsSeeder::class);
+        $this->call(OrderItemsSeeder::class);
+        $this->call(CartsSeeder::class);
+        $this->call(CartItemsSeeder::class);
+        $this->call(ProductReviewsSeeder::class);
+        $this->call(TransactionsSeeder::class);
+        $this->call(PivotProductCategoriesSeeder::class);
     }
 }

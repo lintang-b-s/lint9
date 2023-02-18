@@ -27,8 +27,15 @@ class ProductCategory extends Model
 
     public function product()
     {
-        return $this->hasMany('App\Models\Product', 'category_id');
+        return $this->belongsToMany('App\Models\Product', 'pivot_product_categories', 'category_id', 'product_id');
     }
+
+    public function product_category()
+    {
+        return $this->hasMany('App\Models\PivotProductCategory', 'category_id');
+    }
+
+
 
     
 }

@@ -70,9 +70,5 @@ class BlogPost extends Model
             ->with('author');
     }
 
-    // public function scopeFilter(Builder $query)
-    // {
-    //     return $query
-    // }
-    
+   
 }

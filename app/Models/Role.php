@@ -7,7 +7,7 @@ class Role extends BaseModel
     /**
      * Role constants
      */
-    public const ROLE_ADMIN = 'admin';
+    public const ROLE_ADMIN = 'superadmin';
 
     /**
      * @var int Auto increments integer key
@@ -27,4 +27,14 @@ class Role extends BaseModel
     protected $fillable = [
         'name', 'description',
     ];
+
+    public function user()
+    {
+        return $this->belongsToMany('App\Models\User', 'user_roles', 'role_id', 'user_id');
+    }
+
+    public function user_role()
+    {
+        return $this->hasMany('App\Models\RoleUser', 'role_id');
+    }
 }

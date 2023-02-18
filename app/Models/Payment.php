@@ -9,7 +9,7 @@ class Payment extends Model
 {
     use HasFactory;
 
-    public $table = 'payment';
+    public $table = 'payments';
 
     protected $dates = [
         'created_at',

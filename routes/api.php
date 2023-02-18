@@ -197,26 +197,16 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
             $api->delete('/{uuid}', 'App\Http\Controllers\PaymentController@delete');
         });
 
-        /*
-        * OrderDetails
-        */
-        $api->group(['prefix' => 'order-details'], function (Router $api) {
-            $api->get('/', 'App\Http\Controllers\OrderDetailController@getAll');
-            $api->get('/{uuid}', 'App\Http\Controllers\OrderDetailController@get');
-            $api->post('/', 'App\Http\Controllers\OrderDetailController@post');
-            $api->patch('/{uuid}', 'App\Http\Controllers\OrderDetailController@patch');
-            $api->delete('/{uuid}', 'App\Http\Controllers\OrderDetailController@delete');
-        });
-        
+     
         /*
         * Products
         */
         $api->group(['prefix' => 'products'], function (Router $api) {
-            $api->get('/', 'App\Http\Controllers\ProductController@getAll');
-            $api->get('/{uuid}', 'App\Http\Controllers\ProductController@get');
-            $api->post('/', 'App\Http\Controllers\ProductController@post');
-            $api->patch('/{uuid}', 'App\Http\Controllers\ProductController@patch');
-            $api->delete('/{uuid}', 'App\Http\Controllers\ProductController@delete');
+            $api->get('/', 'App\Http\Controllers\ProductController@index');
+            $api->get('/{product}', 'App\Http\Controllers\ProductController@show');
+            $api->post('/', 'App\Http\Controllers\ProductController@store');
+            $api->put('/{product}', 'App\Http\Controllers\ProductController@update');
+            $api->delete('/{product}', 'App\Http\Controllers\ProductController@destroy');
         });
 
         /*
@@ -228,6 +218,106 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
             $api->post('/', 'App\Http\Controllers\SupplierController@post');
             $api->patch('/{uuid}', 'App\Http\Controllers\SupplierController@patch');
             $api->delete('/{uuid}', 'App\Http\Controllers\SupplierController@delete');
+        });
+
+        /*
+        * UserPayments
+        */
+        $api->group(['prefix' => 'user-payments'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\UserPaymentController@getAll');
+            $api->get('/{uuid}', 'App\Http\Controllers\UserPaymentController@get');
+            $api->post('/', 'App\Http\Controllers\UserPaymentController@post');
+            $api->patch('/{uuid}', 'App\Http\Controllers\UserPaymentController@patch');
+            $api->delete('/{uuid}', 'App\Http\Controllers\UserPaymentController@delete');
+        });
+
+        /*
+        * UserAddresses
+        */
+        $api->group(['prefix' => 'user-addresses'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\UserAddressController@getAll');
+            $api->get('/{uuid}', 'App\Http\Controllers\UserAddressController@get');
+            $api->post('/', 'App\Http\Controllers\UserAddressController@post');
+            $api->patch('/{uuid}', 'App\Http\Controllers\UserAddressController@patch');
+            $api->delete('/{uuid}', 'App\Http\Controllers\UserAddressController@delete');
+        });
+
+        /*
+        * Discounts
+        */
+        $api->group(['prefix' => 'discounts'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\DiscountController@getAll');
+            $api->get('/{uuid}', 'App\Http\Controllers\DiscountController@get');
+            $api->post('/', 'App\Http\Controllers\DiscountController@post');
+            $api->patch('/{uuid}', 'App\Http\Controllers\DiscountController@patch');
+            $api->delete('/{uuid}', 'App\Http\Controllers\DiscountController@delete');
+        });
+
+        /*
+        * OrderItems
+        */
+        $api->group(['prefix' => 'order-items'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\OrderItemController@getAll');
+            $api->get('/{uuid}', 'App\Http\Controllers\OrderItemController@get');
+            $api->post('/', 'App\Http\Controllers\OrderItemController@post');
+            $api->patch('/{uuid}', 'App\Http\Controllers\OrderItemController@patch');
+            $api->delete('/{uuid}', 'App\Http\Controllers\OrderItemController@delete');
+        });
+
+        /*
+        * Carts
+        */
+        $api->group(['prefix' => 'carts'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\CartController@getAll');
+            $api->get('/{uuid}', 'App\Http\Controllers\CartController@get');
+            $api->post('/', 'App\Http\Controllers\CartController@post');
+            $api->patch('/{uuid}', 'App\Http\Controllers\CartController@patch');
+            $api->delete('/{uuid}', 'App\Http\Controllers\CartController@delete');
+        });
+
+        /*
+        * CartItems
+        */
+        $api->group(['prefix' => 'cart-items'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\CartItemController@getAll');
+            $api->get('/{uuid}', 'App\Http\Controllers\CartItemController@get');
+            $api->post('/', 'App\Http\Controllers\CartItemController@post');
+            $api->patch('/{uuid}', 'App\Http\Controllers\CartItemController@patch');
+            $api->delete('/{uuid}', 'App\Http\Controllers\CartItemController@delete');
+        });
+
+        /*
+        * ProductReviews
+        */
+        $api->group(['prefix' => 'product-reviews'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\ProductReviewController@getAll');
+            $api->get('/{uuid}', 'App\Http\Controllers\ProductReviewController@get');
+            $api->post('/', 'App\Http\Controllers\ProductReviewController@post');
+            $api->patch('/{uuid}', 'App\Http\Controllers\ProductReviewController@patch');
+            $api->delete('/{uuid}', 'App\Http\Controllers\ProductReviewController@delete');
+        });
+
+        /*
+        * Transactions
+        */
+        $api->group(['prefix' => 'transactions'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\TransactionController@getAll');
+            $api->get('/{uuid}', 'App\Http\Controllers\TransactionController@get');
+            $api->post('/', 'App\Http\Controllers\TransactionController@post');
+            $api->patch('/{uuid}', 'App\Http\Controllers\TransactionController@patch');
+            $api->delete('/{uuid}', 'App\Http\Controllers\TransactionController@delete');
+        });
+
+
+        /*
+        * PivotProductCategories
+        */
+        $api->group(['prefix' => 'pivot-product-categories'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\PivotProductCategoryController@getAll');
+            $api->get('/{uuid}', 'App\Http\Controllers\PivotProductCategoryController@get');
+            $api->post('/', 'App\Http\Controllers\PivotProductCategoryController@post');
+            $api->patch('/{uuid}', 'App\Http\Controllers\PivotProductCategoryController@patch');
+            $api->delete('/{uuid}', 'App\Http\Controllers\PivotProductCategoryController@delete');
         });
     });
 });

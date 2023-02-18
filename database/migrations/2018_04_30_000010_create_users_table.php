@@ -27,13 +27,9 @@ class CreateUsersTable extends Migration
             $table->foreign('primary_role')->references('role_id')->on('roles')->onDelete('set null');
 
             $table->primary('user_id');
-            $table->boolean('is_admin')->default(false);
-            $table->string('address');
+           
             $table->string('phone');
-            $table->string('credit_card_type')->nullable();
-            $table->string('credit_card_number')->nullable();
-            $table->string('cc_expiration_month')->nullable();
-            $table->string('cc_expiration_year')->nullable();
+           
             
         
             $table->rememberToken();

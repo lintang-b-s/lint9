@@ -40,11 +40,24 @@ class BlogPostController extends Controller
         // return PostResource::collection(BlogPost::mostComment()->paginate(20));
         $query = BlogPost::query()->with('author')->with('tag')->with('category');
 
-        // $filter = request('filter');
+        $query->when(request()->filled('sort'), function($query) {
+            $sort = request()->query('sort');
 
-        // [$criteria, $value] = explode(':', $filter);
-        // dd($query);
+            if ($sort == 'asc') {
+                $query->orderBy('updated_at', 'asc');
+            }
+            else {
+                $query->orderBy('updated_at', 'desc');
+            }
+        });
 
+        $query->when(request()->filled('q'), function ($query) {
+            $q = request()->query('q');
+            $query->where('title', 'like', '%' . $q . '%')
+                ->orWhere('content', 'like', '%' . $q . '%');
+        });
+
+        
         $query->when(request()->filled('filter'), function ($query) {
             $filters = explode(',', request('filter'));
 
@@ -58,7 +71,8 @@ class BlogPostController extends Controller
             return $query;
          });
 
-         return PostResource::collection($query->paginate(20));
+         return response()->json(['data' => [ 'posts' =>PostResource::collection($query->paginate(15)) , 
+            'mostComment' =>  PostResource::collection(BlogPost::mostComment()->get())] ]);
     }
 
     /**
@@ -161,7 +175,7 @@ class BlogPostController extends Controller
     public function update(UpdatePostRequest $request, BlogPost $blogPost)
     {
 
-        $this->authorize('',$blogPost);
+        $this->authorize('blog_posts.update',$blogPost);
         
         $data = $request->all();
 

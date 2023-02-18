@@ -10,7 +10,7 @@ class Order extends Model
 {
     use SoftDeletes;
     
-    public $table = 'order';
+    public $table = 'orders';
 
     protected $dates =  [
         'created_at',
@@ -51,9 +51,9 @@ class Order extends Model
         return $this->belongsTo('App\Models\Shipper', 'shipper_id', 'id');
     }
 
-    public function order_detail()
+    public function order_item()
     {
-        return $this->hasMany('App\Models\OrderDetail', 'order_id');
+        return $this->hasMany('App\Models\OrderItem', 'order_id');
     }
 
 }

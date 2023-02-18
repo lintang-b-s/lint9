@@ -10,7 +10,7 @@ class Product extends Model
 {
     use SoftDeletes;
 
-    public $table = 'product';
+    public $table = 'products';
 
     protected $dates = [
         'created_at',
@@ -23,22 +23,32 @@ class Product extends Model
         'sku',
         'idsku',
         'product_name',
+        'meta_title',
+        'slug',
         'product_description',
         'supplier_id',
-        'category_id',
+        'discount_id',
         'quantity',
         'unit_price',
         'size',
-        'discount',
         'weight',
         'picture',
-        'ranking'
+        'ranking',
+        'sold',
+        'review_total',
+        
     ];
 
+   
 
-    public function category()
+    public function category() 
     {
-        return $this->belongsTo('App\Models\PostCategory', 'category_id', 'id');
+        return $this->belongsToMany('App\Models\PostCategory', 'pivot_product_categories', 'product_id', 'category_id');
+    }
+
+    public function product_category()
+    {
+        return $this->hasMany('App\Models\PivotProductCategory', 'product_id');
     }
 
     public function supplier()
@@ -46,8 +56,31 @@ class Product extends Model
         return $this->belongsTo('App\Models\Supplier', 'supplier_id', 'id');
     }
 
-    public function order_detail()
+    public function order_item()
     {
-        return $this->hasMany('App\Models\OrderDetail', 'product_id');
+        return $this->hasMany('App\Models\OrderItem', 'product_id');
     }
+
+    public function discount()
+    {
+        return $this->belongsTo('App\Models\Discount', 'discount_id', 'id');
+    }
+
+    public function cart_item()
+    {
+        return $this->hasMany('App\Models\CartItem', 'product_id');
+    }
+
+    public function cart()
+    {
+
+        return $this->belongsToMany('App\Models\Cart', 'cart_items', 'product_id', 'cart_id');
+    }
+
+    public function product_review()
+    {
+        return $this->hasMany('App\Models\ProductReview', 'product_id');
+    }
+
+
 }

@@ -10,7 +10,7 @@ class Supplier extends Model
     use HasFactory;
 
 
-    public $table = 'supplier';
+    public $table = 'suppliers';
 
     protected $dates = [
         'created_at',

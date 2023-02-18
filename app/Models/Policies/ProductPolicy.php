@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Policies\..\Models\Policies;
+namespace App\Models\Policies;
 
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+
+use App\Http\Resources\User as UserResource;
 
 class ProductPolicy
 {
@@ -19,6 +21,7 @@ class ProductPolicy
     public function viewAny(User $user)
     {
         //
+        return true;
     }
 
     /**
@@ -31,6 +34,8 @@ class ProductPolicy
     public function view(User $user, Product $product)
     {
         //
+        return true;
+
     }
 
     /**
@@ -42,6 +47,11 @@ class ProductPolicy
     public function create(User $user)
     {
         //
+        $userWithRole = User::query()->with('role')->findOrFail($user->user_id);
+        $userRole = new UserResource($userWithRole);
+        
+        return $userRole->role[0]->name == 'superadmin';
+
     }
 
     /**
@@ -54,6 +64,11 @@ class ProductPolicy
     public function update(User $user, Product $product)
     {
         //
+         $userWithRole = User::query()->with('role')->findOrFail($user->user_id);
+        $userRole = new UserResource($userWithRole);
+        
+        return $userRole->role[0]->name == 'superadmin';
+
     }
 
     /**
@@ -66,6 +81,11 @@ class ProductPolicy
     public function delete(User $user, Product $product)
     {
         //
+         $userWithRole = User::query()->with('role')->findOrFail($user->user_id);
+        $userRole = new UserResource($userWithRole);
+        
+        return $userRole->role[0]->name == 'superadmin';
+
     }
 
     /**
@@ -78,6 +98,9 @@ class ProductPolicy
     public function restore(User $user, Product $product)
     {
         //
+        $userWithRole = User::query()->with('role');
+        return $userWithRole->isAdmin();
+
     }
 
     /**
@@ -90,5 +113,8 @@ class ProductPolicy
     public function forceDelete(User $user, Product $product)
     {
         //
+        $userWithRole = User::query()->with('role');
+        return $userWithRole->isAdmin();
+
     }
 }

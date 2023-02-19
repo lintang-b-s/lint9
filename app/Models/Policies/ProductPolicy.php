@@ -47,10 +47,10 @@ class ProductPolicy
     public function create(User $user)
     {
         //
-        $userWithRole = User::query()->with('role')->findOrFail($user->user_id);
-        $userRole = new UserResource($userWithRole);
+        $userWithRole = $user->load('role');
+         $userRole = new UserResource($userWithRole);
         
-        return $userRole->role[0]->name == 'superadmin';
+        return $userRole->role[0]->name == 'superadmin' && $product->load('supplier')->supplier->customer_id == $user->user_id;
 
     }
 
@@ -63,11 +63,12 @@ class ProductPolicy
      */
     public function update(User $user, Product $product)
     {
-        //
-         $userWithRole = User::query()->with('role')->findOrFail($user->user_id);
+        
+
+        $userWithRole = $user->load('role');
         $userRole = new UserResource($userWithRole);
         
-        return $userRole->role[0]->name == 'superadmin';
+        return $userRole->role[0]->name == 'superadmin' && $product->load('supplier')->supplier->customer_id == $user->user_id;
 
     }
 
@@ -81,10 +82,10 @@ class ProductPolicy
     public function delete(User $user, Product $product)
     {
         //
-         $userWithRole = User::query()->with('role')->findOrFail($user->user_id);
-        $userRole = new UserResource($userWithRole);
+        $userWithRole = $user->load('role');
+          $userRole = new UserResource($userWithRole);
         
-        return $userRole->role[0]->name == 'superadmin';
+        return $userRole->role[0]->name == 'superadmin' && $product->load('supplier')->supplier->customer_id == $user->user_id;
 
     }
 
@@ -98,8 +99,10 @@ class ProductPolicy
     public function restore(User $user, Product $product)
     {
         //
-        $userWithRole = User::query()->with('role');
-        return $userWithRole->isAdmin();
+        $userWithRole = $user->load('role');
+         $userRole = new UserResource($userWithRole);
+        
+        return $userRole->role[0]->name == 'superadmin' && $product->load('supplier')->supplier->customer_id == $user->user_id;
 
     }
 
@@ -113,8 +116,10 @@ class ProductPolicy
     public function forceDelete(User $user, Product $product)
     {
         //
-        $userWithRole = User::query()->with('role');
-        return $userWithRole->isAdmin();
+        $userWithRole = $user->load('role');
+         $userRole = new UserResource($userWithRole);
+        
+        return $userRole->role[0]->name == 'superadmin' && $product->load('supplier')->supplier->customer_id == $user->user_id;
 
     }
 }

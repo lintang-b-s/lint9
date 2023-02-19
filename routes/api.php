@@ -66,6 +66,14 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
     });
 
 
+    $api->group(['prefix' => 'products'], function (Router $api) {
+        $api->get('/', 'App\Http\Controllers\ProductController@index');
+        $api->get('/{product}', 'App\Http\Controllers\ProductController@show');
+    
+    });
+
+
+
     /*
      * Authenticated routes
      */
@@ -202,8 +210,7 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
         * Products
         */
         $api->group(['prefix' => 'products'], function (Router $api) {
-            $api->get('/', 'App\Http\Controllers\ProductController@index');
-            $api->get('/{product}', 'App\Http\Controllers\ProductController@show');
+         
             $api->post('/', 'App\Http\Controllers\ProductController@store');
             $api->put('/{product}', 'App\Http\Controllers\ProductController@update');
             $api->delete('/{product}', 'App\Http\Controllers\ProductController@destroy');

@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 use App\Http\Resources\Product\Product as ProductResource;
 use App\Http\Requests\Product\StoreProductRequest;
+use App\Http\Requests\Product\UpdateProductRequest;
+
 use Illuminate\Support\Facades\Storage;
 
 
@@ -37,6 +39,8 @@ class ProductController extends Controller
      */
     public function index()
     {
+       
+
         return response()->json(['data' => ProductResource::collection(Product::all()->load('supplier'))]);
 
     }
@@ -97,12 +101,7 @@ class ProductController extends Controller
             $product->category()->attach($category_id);
         }
 
-        if ($request->filled('cart_id')) {
-           
-            $cart_id = json_decode($request->input('cart_id', []), true);
-            
-            $product->cart()->attach($cart_id);
-        }
+        
 
 
     
@@ -117,7 +116,8 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        
+        return response()->json(['data' => new ProductResource($product->load('supplier'))]);
     }
 
     /**
@@ -138,10 +138,44 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(UpdateProductRequest $request, Product $product)
     {
-        //
+        $this->authorize('products.update', $product);
+
+        $data = $request->all();
+
+        if(isset($data['picture'])){
+
+            // first checking old picture to delete from storage
+           $get_item = $product['picture'];
+
+           // change file locations
+           $data['picture'] = $request->file('picture')->store(
+               'assets/file-product', 'public'
+           );
+
+           // delete old picture from storage
+           $data_old = 'storage/'.$get_item;
+           if (File::exists($data_old)) {
+               File::delete($data_old);
+           }else{
+               File::delete('storage/app/public/'.$get_item);
+           }
+
+       }
+
+       $product->update($data);
+
+       
+    if ($request->filled('category_id'))
+    {
+        $category_id = json_decode($request->input('category_id', []), true);
+        $product->category()->sync($category_id);
     }
+
+    return response()->json(['data' => new ProductResource($product->refresh())]);
+
+}
 
     /**
      * Remove the specified resource from storage.
@@ -151,6 +185,21 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $user  = app('Dingo\Api\Auth\Auth')->user();
+        // $this->authorize( $user, $product);
+        $this->authorize('products.delete', $product);
+
+        $get_item = $product['picture'];
+
+        $data = 'storage/'.$get_item;
+
+        if (File::exists($data)) {
+            File::delete($data);
+        }else{
+            File::delete('storage/app/public/'.$get_item);
+        };
+
+        $product->forceDelete();
+
     }
 }

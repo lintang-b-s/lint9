@@ -18,6 +18,7 @@ class ProductReview extends JsonResource
     {
         // return parent::toArray($request);
         return [
+            'id' => $this->id,
             'customer' => new UserResource($this->whenLoaded('customer')),
             'product' => new ProductResource($this->whenLoaded('product')),
             'title' => $this->title,

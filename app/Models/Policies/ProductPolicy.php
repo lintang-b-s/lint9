@@ -49,8 +49,15 @@ class ProductPolicy
         //
         $userWithRole = $user->load('role');
          $userRole = new UserResource($userWithRole);
+        $adminRole = false;
+
+        foreach ($userRole->role as $role) {
+            if ($role->name == 'supplier') {
+                $adminRole = true;
+            }
+        }
         
-        return $userRole->role[0]->name == 'superadmin' && $product->load('supplier')->supplier->customer_id == $user->user_id;
+        return $adminRole  && $product->load('supplier')->supplier->customer_id == $user->user_id;
 
     }
 
@@ -64,11 +71,17 @@ class ProductPolicy
     public function update(User $user, Product $product)
     {
         
-
         $userWithRole = $user->load('role');
-        $userRole = new UserResource($userWithRole);
+         $userRole = new UserResource($userWithRole);
+        $adminRole = false;
+
+        foreach ($userRole->role as $role) {
+            if ($role->name == 'supplier') {
+                $adminRole = true;
+            }
+        }
         
-        return $userRole->role[0]->name == 'superadmin' && $product->load('supplier')->supplier->customer_id == $user->user_id;
+        return $adminRole  && $product->load('supplier')->supplier->customer_id == $user->user_id;
 
     }
 
@@ -81,11 +94,18 @@ class ProductPolicy
      */
     public function delete(User $user, Product $product)
     {
-        //
-        $userWithRole = $user->load('role');
-          $userRole = new UserResource($userWithRole);
+    //
+            $userWithRole = $user->load('role');
+            $userRole = new UserResource($userWithRole);
+        $adminRole = false;
+
+        foreach ($userRole->role as $role) {
+            if ($role->name == 'supplier') {
+                $adminRole = true;
+            }
+        }
         
-        return $userRole->role[0]->name == 'superadmin' && $product->load('supplier')->supplier->customer_id == $user->user_id;
+        return $adminRole  && $product->load('supplier')->supplier->customer_id == $user->user_id;
 
     }
 
@@ -98,11 +118,18 @@ class ProductPolicy
      */
     public function restore(User $user, Product $product)
     {
-        //
-        $userWithRole = $user->load('role');
-         $userRole = new UserResource($userWithRole);
-        
-        return $userRole->role[0]->name == 'superadmin' && $product->load('supplier')->supplier->customer_id == $user->user_id;
+       //
+       $userWithRole = $user->load('role');
+       $userRole = new UserResource($userWithRole);
+      $adminRole = false;
+
+      foreach ($userRole->role as $role) {
+          if ($role->name == 'supplier') {
+              $adminRole = true;
+          }
+      }
+      
+      return $adminRole  && $product->load('supplier')->supplier->customer_id == $user->user_id;
 
     }
 
@@ -115,11 +142,18 @@ class ProductPolicy
      */
     public function forceDelete(User $user, Product $product)
     {
-        //
-        $userWithRole = $user->load('role');
+         //
+         $userWithRole = $user->load('role');
          $userRole = new UserResource($userWithRole);
+        $adminRole = false;
+
+        foreach ($userRole->role as $role) {
+            if ($role->name == 'supplier') {
+                $adminRole = true;
+            }
+        }
         
-        return $userRole->role[0]->name == 'superadmin' && $product->load('supplier')->supplier->customer_id == $user->user_id;
+        return $adminRole  && $product->load('supplier')->supplier->customer_id == $user->user_id;
 
     }
 }

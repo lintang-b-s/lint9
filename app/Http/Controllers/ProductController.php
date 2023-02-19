@@ -39,9 +39,64 @@ class ProductController extends Controller
      */
     public function index()
     {
-       
+       $query = Product::query()->with('supplier')->with('discount')->with('category')->with('order_item')
+        ->withCount('product_review');
 
-        return response()->json(['data' => ProductResource::collection(Product::all()->load('supplier'))]);
+        // handles ?sort=-updated_at,review,unit_price
+        $query->when(request()->filled('sort'), function($query) {
+           
+            $sorts = explode(',', $request->input('sort', ''));
+            foreach ($sorts as $sortColumn) {
+                $sortDirection = starts_with($sortColumn, '-') ? 'desc' : 'asc';
+                $sortColumn = ltrim($sortColumn, '-');
+
+                if ($sortColumn != 'review') {
+                    $query->orderBy($sortColumn, $sortDirection);
+                }
+                else {
+                    // $query->whereHas('product_review', function (Builder $query) use ($sortColumn, $sortDirection) {
+                        
+                    // });
+                    $query->orderBy('product_review_count', $sortDirection);
+                }
+            }
+
+        });
+
+        $query->when(request()->filled('q'), function ($query) {
+            $q = request()->query('q');
+            $query->where('product_name', 'like', '%' . $q . '%')
+                ->orWhere('product_description', 'like', '%' . $q . '%');
+            $query->whereHas('category', function (Builder $query) use ($q) {
+                $query->where('title' ,'like', '%' . $q . '%');
+            });
+        });
+
+        $query->when(request()->filled('filter'), function ($query) {
+            $filters = explode(',', request('filter'));
+
+            foreach ($filters as $filter) {
+                [$criteria, $value] = explode(':', $filter);
+                $query->whereHas($criteria , function (Builder $query) use ($value, $criteria){
+                    if ($criteria == 'category') {
+                        $query->where('title' , $value);
+                    }
+                    if ($criteria == 'supplier') {
+                        $query->where('address', 'like', '%' . $value . '%' )
+                            ->orWhere('company_name', $value );
+                    }
+                    if ($criteria == 'discount') {
+                        $query->where('name', $value);
+                    }
+                });
+            }
+
+            return $query;
+         });
+
+
+
+        return response()->json(['data' => ProductResource::collection($query->paginate(20))]);
 
     }
 

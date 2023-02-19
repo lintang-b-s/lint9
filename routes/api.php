@@ -73,6 +73,16 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
     });
 
 
+     /*
+        * Discounts
+        */
+        $api->group(['prefix' => 'discounts'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\DiscountController@index');
+            $api->get('/{discount}', 'App\Http\Controllers\DiscountController@show');
+          
+        });
+
+
 
     /*
      * Authenticated routes
@@ -253,11 +263,14 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
         * Discounts
         */
         $api->group(['prefix' => 'discounts'], function (Router $api) {
-            $api->get('/', 'App\Http\Controllers\DiscountController@getAll');
-            $api->get('/{uuid}', 'App\Http\Controllers\DiscountController@get');
-            $api->post('/', 'App\Http\Controllers\DiscountController@post');
-            $api->patch('/{uuid}', 'App\Http\Controllers\DiscountController@patch');
-            $api->delete('/{uuid}', 'App\Http\Controllers\DiscountController@delete');
+            $api->post('/', 'App\Http\Controllers\DiscountController@store');
+            $api->put('/{discount}', 'App\Http\Controllers\DiscountController@update');
+            $api->put('/{discount}/products', 'App\Http\Controllers\DiscountController@addDiscountToProducts');
+            $api->put('/{discount}/productCategories', 'App\Http\Controllers\DiscountController@addDiscountToCategories');
+            $api->put('/{discount}/suppliers', 'App\Http\Controllers\DiscountController@addDiscountToSuppliers');
+
+
+            $api->delete('/{discount}', 'App\Http\Controllers\DiscountController@destroy');
         });
 
         /*

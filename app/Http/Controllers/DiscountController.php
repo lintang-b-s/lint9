@@ -4,9 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Discount;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+use App\Http\Resources\Discount as DiscountResource;
 
 class DiscountController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth')
+            ->only(['create', 'store', 'edit', 'update', 'destroy']);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +24,8 @@ class DiscountController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(['data' => DiscountResource::collection(Product::all()->load('product'))]);
+
     }
 
     /**
@@ -36,6 +47,15 @@ class DiscountController extends Controller
     public function store(Request $request)
     {
         //
+
+        $this->authorize('discounts.create');
+
+        $data = $request->all();
+        $discount = Discount::create($data);
+
+        return response()->json(['data' => ]);
+
+
     }
 
     /**

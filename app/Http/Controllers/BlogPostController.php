@@ -37,7 +37,6 @@ class BlogPostController extends Controller
     {
         //
 
-        // return PostResource::collection(BlogPost::mostComment()->paginate(20));
         $query = BlogPost::query()->with('author')->with('tag')->with('category');
 
         $query->when(request()->filled('sort'), function($query) {

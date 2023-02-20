@@ -9,7 +9,7 @@ class PivotProductCategory extends Model
 {
     use HasFactory;
 
-    public $table = 'products';
+    public $table = 'pivot_product_categories';
 
     protected $dates = [
         'created_at',
@@ -25,7 +25,7 @@ class PivotProductCategory extends Model
 
     public function category()
     {
-        return $this->belongsTo('App\Models\Category', 'category_id', 'id');
+        return $this->belongsTo('App\Models\ProductCategory', 'category_id', 'id');
     }
 
     public function product()

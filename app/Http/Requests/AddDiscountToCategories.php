@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateDiscountRequest extends FormRequest
+class AddDiscountToCategories extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,7 @@ class UpdateDiscountRequest extends FormRequest
     public function rules()
     {
         return [
-                'name' =>'min:3|unique:discounts|max:255',
-                'description' => 'min:3',
-                'discount_percent' => 'numeric',
-                'active' => 'boolean'
+            'category_id' => 'array'
         ];
     }
 }

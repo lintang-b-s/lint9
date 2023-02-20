@@ -24,10 +24,11 @@ class StoreDiscountRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' =>'min:3|required|max:255',
+            'name' =>'min:3|required|unique:discounts|max:255',
             'description' => 'min:3|required',
             'discount_percent' => 'numeric|required',
             'active' => 'boolean|required',
+            'product_id' => 'integer'
 
         ];
     }

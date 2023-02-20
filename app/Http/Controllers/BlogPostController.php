@@ -48,12 +48,16 @@ class BlogPostController extends Controller
             else {
                 $query->orderBy('updated_at', 'desc');
             }
+
+            return $query;
         });
 
         $query->when(request()->filled('q'), function ($query) {
             $q = request()->query('q');
             $query->where('title', 'like', '%' . $q . '%')
                 ->orWhere('content', 'like', '%' . $q . '%');
+
+            return $query;
         });
 
         
@@ -71,7 +75,7 @@ class BlogPostController extends Controller
          });
 
          return response()->json(['data' => [ 'posts' =>PostResource::collection($query->paginate(15)) , 
-            'mostComment' =>  PostResource::collection(BlogPost::mostComment()->get())] ]);
+            'mostComment' =>  PostResource::collection(BlogPost::mostComment()->orderBy('post_comment_count', 'asc')->paginate(10))] ]);
     }
 
     /**

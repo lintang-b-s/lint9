@@ -10,7 +10,7 @@ class ProductCategory extends Model
     use HasFactory;
 
 
-    public $table = 'product_category';
+    public $table = 'product_categories';
 
     protected $dates = [
         'created_at',
@@ -24,6 +24,9 @@ class ProductCategory extends Model
         'picture',
         'active'
     ];
+
+    // protected $primaryKey = 'id';//
+
 
     public function product()
     {

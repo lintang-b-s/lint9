@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Policies\..\Models\Policies;
+namespace App\Models\Policies;
 
 use App\Models\Discount;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use App\Http\Resources\User as UserResource;
+
 
 class DiscountPolicy
 {
@@ -41,7 +43,20 @@ class DiscountPolicy
      */
     public function create(User $user)
     {
-        //
+         //
+         $userWithRole = $user->load('role');
+         $userRole = new UserResource($userWithRole);
+        $adminRole = false;
+
+        foreach ($userRole->role as $role) {
+            if ($role->name == 'superadmin') {
+                $adminRole = true;
+            }
+        }
+        
+        return $adminRole  ;
+
+
     }
 
     /**
@@ -53,7 +68,17 @@ class DiscountPolicy
      */
     public function update(User $user, Discount $discount)
     {
-        //
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+       $adminRole = false;
+
+       foreach ($userRole->role as $role) {
+           if ($role->name == 'superadmin') {
+               $adminRole = true;
+           }
+       }
+       
+       return $adminRole  ;
     }
 
     /**
@@ -65,7 +90,17 @@ class DiscountPolicy
      */
     public function delete(User $user, Discount $discount)
     {
-        //
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+       $adminRole = false;
+
+       foreach ($userRole->role as $role) {
+           if ($role->name == 'superadmin') {
+               $adminRole = true;
+           }
+       }
+       
+       return $adminRole  ;
     }
 
     /**
@@ -77,7 +112,17 @@ class DiscountPolicy
      */
     public function restore(User $user, Discount $discount)
     {
-        //
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+       $adminRole = false;
+
+       foreach ($userRole->role as $role) {
+           if ($role->name == 'superadmin') {
+               $adminRole = true;
+           }
+       }
+       
+       return $adminRole  ;
     }
 
     /**
@@ -89,6 +134,64 @@ class DiscountPolicy
      */
     public function forceDelete(User $user, Discount $discount)
     {
-        //
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+       $adminRole = false;
+
+       foreach ($userRole->role as $role) {
+           if ($role->name == 'superadmin') {
+               $adminRole = true;
+           }
+       }
+       
+       return $adminRole  ;
+    }
+
+    public function addDiscountToProducts(User $user, Discount $discount)
+    {
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+       $adminRole = false;
+
+
+       foreach ($userRole->role as $role) {
+           if ($role->name == 'superadmin') {
+               $adminRole = true;
+           }
+       }
+
+       return $adminRole  ;
+    }
+
+    public function addDiscountToCategories(User $user, Discount $discount)
+    {
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+       $adminRole = false;
+
+
+       foreach ($userRole->role as $role) {
+           if ($role->name == 'superadmin') {
+               $adminRole = true;
+           }
+       }
+
+       return $adminRole  ;
+    }
+
+    public function addDiscountToSuppliersType(User $user, Discount $discount)
+    {
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+       $adminRole = false;
+
+
+       foreach ($userRole->role as $role) {
+           if ($role->name == 'superadmin') {
+               $adminRole = true;
+           }
+       }
+
+       return $adminRole  ;
     }
 }

@@ -43,4 +43,8 @@ class Supplier extends Model
         return $this->belongsTo('App\Models\User', 'customer_id', 'user_id');
     }
 
+    public function tier()
+    {
+        return $this->belongsTo('App\Models\SupplierType', 'tier_id', 'id');
+    }
 }

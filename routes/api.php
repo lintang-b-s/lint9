@@ -267,7 +267,7 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
             $api->put('/{discount}', 'App\Http\Controllers\DiscountController@update');
             $api->put('/{discount}/products', 'App\Http\Controllers\DiscountController@addDiscountToProducts');
             $api->put('/{discount}/productCategories', 'App\Http\Controllers\DiscountController@addDiscountToCategories');
-            $api->put('/{discount}/suppliers', 'App\Http\Controllers\DiscountController@addDiscountToSuppliers');
+            $api->put('/{discount}/suppliersType', 'App\Http\Controllers\DiscountController@addDiscountToSuppliersType');
 
 
             $api->delete('/{discount}', 'App\Http\Controllers\DiscountController@destroy');
@@ -338,6 +338,17 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
             $api->post('/', 'App\Http\Controllers\PivotProductCategoryController@post');
             $api->patch('/{uuid}', 'App\Http\Controllers\PivotProductCategoryController@patch');
             $api->delete('/{uuid}', 'App\Http\Controllers\PivotProductCategoryController@delete');
+        });
+
+        /*
+        * SupplierTypes
+        */
+        $api->group(['prefix' => 'supplier-types'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\SupplierTypeController@getAll');
+            $api->get('/{uuid}', 'App\Http\Controllers\SupplierTypeController@get');
+            $api->post('/', 'App\Http\Controllers\SupplierTypeController@post');
+            $api->patch('/{uuid}', 'App\Http\Controllers\SupplierTypeController@patch');
+            $api->delete('/{uuid}', 'App\Http\Controllers\SupplierTypeController@delete');
         });
     });
 });

@@ -50,6 +50,8 @@ class Product extends JsonResource
             'ranking' => $this->ranking,
             'sold' => $this->sold,
             'review_total' => $this->review_total,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

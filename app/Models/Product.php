@@ -36,14 +36,21 @@ class Product extends Model
         'ranking',
         'sold',
         'review_total',
-        
     ];
+
+    // public $sortable = ['name',
+    // 'updated_at',
+    // 'created_at',
+    // 'unit_price',
+    // ];
+
+    // protected $primaryKey = 'id';//
 
    
 
     public function category() 
     {
-        return $this->belongsToMany('App\Models\PostCategory', 'pivot_product_categories', 'product_id', 'category_id');
+        return $this->belongsToMany('App\Models\ProductCategory', 'pivot_product_categories', 'product_id', 'category_id');
     }
 
     public function product_category()

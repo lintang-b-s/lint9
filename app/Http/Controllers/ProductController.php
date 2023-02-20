@@ -20,6 +20,8 @@ use Dingo\Api\Exception\DeleteResourceFailedException;
 use Dingo\Api\Exception\ResourceException;
 use Dingo\Api\Exception\StoreResourceFailedException;
 use Dingo\Api\Exception\UpdateResourceFailedException;
+use Illuminate\Support\Str;
+
 use File;
 
 
@@ -43,57 +45,116 @@ class ProductController extends Controller
         ->withCount('product_review');
 
         // handles ?sort=-updated_at,review,unit_price
-        $query->when(request()->filled('sort'), function($query) {
-           
-            $sorts = explode(',', $request->input('sort', ''));
-            foreach ($sorts as $sortColumn) {
-                $sortDirection = starts_with($sortColumn, '-') ? 'desc' : 'asc';
-                $sortColumn = ltrim($sortColumn, '-');
-
-                if ($sortColumn != 'review') {
+        $query->where( function($query) {
+            if (request()->filled('sort')) {
+                $sorts = explode(',', request()->input('sort', ''));
+                foreach ($sorts as $sortColumn) {
+                    $sortDirection = Str::startsWith($sortColumn, '-') ? 'desc' : 'asc';
+                    $sortColumn = ltrim($sortColumn, '-');
+                    
+                    // if ($sortColumn != 'review') {
                     $query->orderBy($sortColumn, $sortDirection);
-                }
-                else {
-                    // $query->whereHas('product_review', function (Builder $query) use ($sortColumn, $sortDirection) {
-                        
-                    // });
-                    $query->orderBy('product_review_count', $sortDirection);
+                    // }
+                    // else {
+                    
+                    //     $query->orderBy('product_review_count', $sortDirection);
+                    // }
                 }
             }
-
-        });
-
-        $query->when(request()->filled('q'), function ($query) {
-            $q = request()->query('q');
-            $query->where('product_name', 'like', '%' . $q . '%')
-                ->orWhere('product_description', 'like', '%' . $q . '%');
-            $query->whereHas('category', function (Builder $query) use ($q) {
-                $query->where('title' ,'like', '%' . $q . '%');
-            });
-        });
-
-        $query->when(request()->filled('filter'), function ($query) {
-            $filters = explode(',', request('filter'));
-
-            foreach ($filters as $filter) {
-                [$criteria, $value] = explode(':', $filter);
-                $query->whereHas($criteria , function (Builder $query) use ($value, $criteria){
-                    if ($criteria == 'category') {
-                        $query->where('title' , $value);
-                    }
-                    if ($criteria == 'supplier') {
-                        $query->where('address', 'like', '%' . $value . '%' )
-                            ->orWhere('company_name', $value );
-                    }
-                    if ($criteria == 'discount') {
-                        $query->where('name', $value);
-                    }
-                });
-            }
-
             return $query;
-         });
+        });
 
+       
+            $query->where( function ($query) {
+                if (request()->filled('q')) {
+                $q = request()->query('q');
+                $query->where('product_name', 'like', '%' . $q . '%')
+                    ->orWhere('product_description', 'like', '%' . $q . '%')
+                    ->orWhereHas('category', function (Builder $query) use ($q) {
+
+                       
+                        $query->where('product_categories.category_name', $q);
+
+                        return $query;
+                    });
+
+                return $query;
+                }
+            });
+
+            $query->where(function ($query) {
+                if (request()->filled('filter') ){
+                $filters = explode('&', request('filter'));
+
+                foreach ($filters as $filter) {
+                    [$criteria, $value] = explode(':', $filter);
+
+                    $query->where(function ($query) use($criteria, $value) { 
+                       if ($criteria !='price' && $criteria != 'supplier_tier' ) { 
+                       $query->whereHas($criteria , function (Builder $query) use ($value, $criteria){
+                            $query->where( function($query) use($criteria, $value) {
+                                if ($criteria == 'category') {
+                                    $category_ids = collect(explode(',', $value))
+                                    ->map(fn($i) => trim($i))
+                                    ->all();
+                                    $query->whereIn('category_id', $category_ids);
+                                }
+                            })
+                            ->where( function ($query) use($criteria, $value){
+                                if ($criteria == 'supplier' ) {
+                                $supplier_ids = collect(explode(',', $value))
+                                    ->map(fn($i) => trim($i))
+                                    ->all();
+
+                                $value = explode(',',$value);
+                                foreach ($value as $address) {
+                                    $query->where(function ($query) use ($address, $supplier_ids, $criteria, $value) {
+                                        $query->where('address', 'like', '%' . $address . '%')
+                                            ->orWhereIn('supplier_id', $supplier_ids);
+
+                                    return $query;
+                                    });
+                                }
+                                }
+                            })
+                            ->where( function($query) use($criteria, $value){
+                                if ($criteria == 'discount') {
+                                $discount_ids = collect(explode(',', $value))
+                                    ->map(fn($i) => trim($i))
+                                    ->all();
+                                $query->whereIn('discount_id', $discount_ids);
+                                }
+                            });
+
+                            return $query;
+                        }); 
+                        }
+                    })
+
+
+                        ->where(function($query) use($criteria, $value) {
+                        if ($criteria == 'price') {
+                            [$minPrice, $maxPrice] = explode(',', $value);
+                            $query->whereBetween('unit_price', [$minPrice, $maxPrice]);
+                        }
+                    })
+                    ->where(function($query) use ($criteria, $value) {
+                        if ($criteria == 'supplier_tier') {
+                            $query->whereHas('supplier',function (Builder $query) use ($value, $criteria){
+                                $query->where('tier_id', $value);
+    
+                            return $query;
+                            });
+                        }
+                        return $query;
+                    });
+                 
+                }
+            }
+
+                return $query;
+                
+            });
 
 
         return response()->json(['data' => ProductResource::collection($query->paginate(20))]);

@@ -24,10 +24,11 @@ class UpdateProductCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'category_name' =>  'min:3|required|max:255',
-            'description' => 'min:3|required|max:255',
+            'category_name' =>  'min:3|unique:product_categories|max:255',
+            'description' => 'min:3|max:255',
             'picture' => 'image|mimes:jpg,jpeg,png,gif,svg|max:10000',
-            'active' =>  'min:3|required|max:255'
+            'active' =>  'min:3|max:255',
+            'parent_id' => 'integer'
         ];
     }
 }

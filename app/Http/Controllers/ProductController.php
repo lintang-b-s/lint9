@@ -189,9 +189,6 @@ class ProductController extends Controller
         $data['sku'] = uniqid();
         $data['idsku'] = uniqid();
 
-       
-        
-
         $path = public_path('app/public/assets/file-product');
         if(!File::isDirectory($path)){
             $response = Storage::makeDirectory('public/assets/file-product');
@@ -216,9 +213,6 @@ class ProductController extends Controller
             
             $product->category()->attach($category_id);
         }
-
-        
-
 
     
         return response()->json(['data' => new ProductResource($product)]);
@@ -317,5 +311,6 @@ class ProductController extends Controller
 
         $product->forceDelete();
 
+        return response()->json(['message' => 'product succesfully deleted']);
     }
 }

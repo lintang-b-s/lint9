@@ -22,7 +22,8 @@ class ProductCategory extends Model
         'category_name',
         'description',
         'picture',
-        'active'
+        'active',
+        'parent_id'
     ];
 
     // protected $primaryKey = 'id';//
@@ -38,7 +39,14 @@ class ProductCategory extends Model
         return $this->hasMany('App\Models\PivotProductCategory', 'category_id');
     }
 
+    public function subcategory()
+    {
+        return $this->hasMany('App\Models\ProductCategory', 'parent_id', 'id');
+    }
 
-
+    public function parent()
+    {
+        return $this->hasOne('App\Models\ProductCategory', 'id', 'parent_id');
+    }
     
 }

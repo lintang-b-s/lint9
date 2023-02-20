@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Policies\..\Models\Policies;
+namespace App\Models\Policies;
 
 use App\Models\ProductCategory;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use App\Http\Resources\User as UserResource;
 
 class ProductCategoryPolicy
 {
@@ -41,7 +42,18 @@ class ProductCategoryPolicy
      */
     public function create(User $user)
     {
-        //
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+       $adminRole = false;
+
+
+       foreach ($userRole->role as $role) {
+           if ($role->name == 'superadmin') {
+               $adminRole = true;
+           }
+       }
+
+       return $adminRole  ;
     }
 
     /**
@@ -53,7 +65,18 @@ class ProductCategoryPolicy
      */
     public function update(User $user, ProductCategory $productCategory)
     {
-        //
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+       $adminRole = false;
+
+
+       foreach ($userRole->role as $role) {
+           if ($role->name == 'superadmin') {
+               $adminRole = true;
+           }
+       }
+
+       return $adminRole  ;
     }
 
     /**
@@ -65,7 +88,18 @@ class ProductCategoryPolicy
      */
     public function delete(User $user, ProductCategory $productCategory)
     {
-        //
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+       $adminRole = false;
+
+
+       foreach ($userRole->role as $role) {
+           if ($role->name == 'superadmin') {
+               $adminRole = true;
+           }
+       }
+
+       return $adminRole  ;
     }
 
     /**
@@ -77,7 +111,18 @@ class ProductCategoryPolicy
      */
     public function restore(User $user, ProductCategory $productCategory)
     {
-        //
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+       $adminRole = false;
+
+
+       foreach ($userRole->role as $role) {
+           if ($role->name == 'superadmin') {
+               $adminRole = true;
+           }
+       }
+
+       return $adminRole  ;
     }
 
     /**
@@ -89,6 +134,17 @@ class ProductCategoryPolicy
      */
     public function forceDelete(User $user, ProductCategory $productCategory)
     {
-        //
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+       $adminRole = false;
+
+
+       foreach ($userRole->role as $role) {
+           if ($role->name == 'superadmin') {
+               $adminRole = true;
+           }
+       }
+
+       return $adminRole  ;
     }
 }

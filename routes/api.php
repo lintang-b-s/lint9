@@ -82,7 +82,14 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
           
         });
 
+    /*
+    *   product-categories
+    */
+    $api->group(['prefix' => 'product-categories'], function (Router $api) {
+        $api->get('/', 'App\Http\Controllers\ProductCategoryController@index');
+        $api->get('/{productCategory}', 'App\Http\Controllers\ProductCategoryController@show');
 
+    });
 
     /*
      * Authenticated routes
@@ -307,6 +314,15 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
         });
 
         /*
+        *   product-categories
+        */
+        $api->group(['prefix' => 'product-categories'], function (Router $api) {
+            $api->post('/', 'App\Http\Controllers\ProductCategoryController@store');
+            $api->put('{productCategory}', 'App\Http\Controllers\ProductCategoryController@update');
+            $api->delete('{productCategory}', 'App\Http\Controllers\ProductCategoryController@destroy');
+        });
+
+        /*
         * ProductReviews
         */
         $api->group(['prefix' => 'product-reviews'], function (Router $api) {
@@ -327,7 +343,6 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
             $api->patch('/{uuid}', 'App\Http\Controllers\TransactionController@patch');
             $api->delete('/{uuid}', 'App\Http\Controllers\TransactionController@delete');
         });
-
 
         /*
         * PivotProductCategories

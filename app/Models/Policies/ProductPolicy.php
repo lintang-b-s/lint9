@@ -57,8 +57,7 @@ class ProductPolicy
             }
         }
         
-        return $adminRole  && $product->load('supplier')->supplier->customer_id == $user->user_id;
-
+        return $adminRole  ;
     }
 
     /**

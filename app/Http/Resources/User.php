@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\Role as RoleResource;
+use App\Http\Resources\Address as AddressResource;
 
 class User extends JsonResource
 {
@@ -21,7 +22,7 @@ class User extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'role' => RoleResource::collection($this->whenLoaded('role')),
-            
+            'address' => AddressResource::collection($this->whenLoaded('address')),
             'phone' => $this->phone,
           
         ];

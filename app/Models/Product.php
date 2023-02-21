@@ -73,7 +73,7 @@ class Product extends Model
         return $this->belongsTo('App\Models\Discount', 'discount_id', 'id');
     }
 
-    public function cart_item()
+    public function my_cart_items()
     {
         return $this->hasMany('App\Models\CartItem', 'product_id');
     }

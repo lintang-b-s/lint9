@@ -18,13 +18,15 @@ class CartItem extends JsonResource
     {
         // return parent::toArray($request);
         return [
+            'id' => $this->id,
             'product' => new ProductResource($this->whenLoaded('product')),
             'cart' => new CartResource($this->whenLoaded('cart')),
             'sku' => $this->sku,
             'price' => $this->price,
             'discount' => $this->discount,
             'quantity' => $this->quantity,
-            'active' => $this->active
+            'active' => $this->active,
+            'note' => $this->note
         ];
     }
 }

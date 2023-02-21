@@ -161,7 +161,6 @@ class User extends BaseModel implements
      */
     public function getJWTCustomClaims()
     {
-    
         return [
             'user' => [
                 'id' => $this->getKey(),

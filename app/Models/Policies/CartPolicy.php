@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies\..\Models\Policies;
+namespace App\Models\Policies;
 
 use App\Models\Cart;
 use App\Models\User;
@@ -91,4 +91,12 @@ class CartPolicy
     {
         //
     }
+
+    public function addToCart(User $user, Cart $cart) {
+        if ($cart->customer_id == $user->user_id) {
+            return true;
+        }
+    }
+
+
 }

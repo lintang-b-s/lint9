@@ -19,6 +19,7 @@ class Cart extends Model
 
     protected $fillable = 
     [
+        'id',
         'customer_id',
         'session_id',
         'token',
@@ -33,10 +34,11 @@ class Cart extends Model
         'country'
     ];
 
+    protected $primaryKey = 'id';
 
-    public function cart_item()
+    public function my_cart_items()
     {
-        return $this->hasMany('App\Models\CartItem', 'cart_id');
+        return $this->hasMany('App\Models\CartItem', 'cart_id', 'id');
     }
 
     public function product()

@@ -27,12 +27,14 @@ class CartItem extends Model
         'active'
     ];
 
-    public function product_id()
+    protected $primaryKey = 'id';
+
+    public function product()
     {
         return $this->belongsTo('App\Models\Product', 'product_id', 'id');
     }
 
-    public function cart_id()
+    public function cart()
     {
         return $this->belongsTo('App\Models\Cart', 'cart_id', 'id');
     }

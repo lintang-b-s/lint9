@@ -91,6 +91,8 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
 
     });
 
+    
+
     /*
      * Authenticated routes
      */
@@ -294,12 +296,15 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
         /*
         * Carts
         */
-        $api->group(['prefix' => 'carts'], function (Router $api) {
-            $api->get('/', 'App\Http\Controllers\CartController@getAll');
-            $api->get('/{uuid}', 'App\Http\Controllers\CartController@get');
-            $api->post('/', 'App\Http\Controllers\CartController@post');
-            $api->patch('/{uuid}', 'App\Http\Controllers\CartController@patch');
-            $api->delete('/{uuid}', 'App\Http\Controllers\CartController@delete');
+        $api->group(['prefix' => 'carts', 'middleware' => ['sessions']], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\CartController@index');
+            $api->get('/{cart}', 'App\Http\Controllers\CartController@show');
+            $api->post('/', 'App\Http\Controllers\CartController@store');
+            $api->patch('/{cart}', 'App\Http\Controllers\CartController@update');
+            $api->delete('/{cart}', 'App\Http\Controllers\CartController@destroy');
+            $api->post('/addToCart', 'App\Http\Controllers\CartController@addToCart');
+            $api->post('/removeFromCart', 'App\Http\Controllers\CartController@removeFromCart');
+            $api->put('/applyDiscountToCart', 'App\Http\Controllers\CartController@applyDiscountToCart');
         });
 
         /*

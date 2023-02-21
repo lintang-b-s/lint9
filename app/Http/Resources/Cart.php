@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\User as UserResource;
 use App\Http\Resources\CartItem as CartItemResource;
-use App\Http\Resources\Product as ProductResource;
+use App\Http\Resources\Product\Product as ProductResource;
 
 
 class Cart extends JsonResource
@@ -20,8 +20,9 @@ class Cart extends JsonResource
     {
         // return parent::toArray($request);
         return [
+            'id' => $this->id,
             'customer' => new UserResource($this->whenLoaded('customer')),
-            'cart_item' => CartItemResource::collection($this->whenLoaded('cart_item')),
+            'my_cart_items' => CartItemResource::collection($this->whenLoaded('my_cart_items')),
             'product' => ProductResource::collection($this->whenLoaded('product')),
             'session_id' => $this->session_id,
             'token' => $this->token ,
@@ -33,7 +34,9 @@ class Cart extends JsonResource
             'address_line' => $this->address_line,
             'city' =>$this->city,
             'postal_code' => $this->postal_code,
-            'country' => $this->country
+            'subtotal' => $this->subtotal,
+            'country' => $this->country,
+            'total' => $this->total
         ];
     }
 }

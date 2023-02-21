@@ -14,7 +14,7 @@ class CreateCartsTable extends Migration
     public function up()
     {
         Schema::create('carts', function (Blueprint $table) {
-            $table->id();
+            $table->string('id')->primary();
             $table->uuid('customer_id');
             $table->foreign('customer_id')->references('user_id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->string('session_id');
@@ -28,6 +28,7 @@ class CreateCartsTable extends Migration
             $table->string('city');
             $table->string('postal_code');
             $table->string('country');
+            
             
             $table->timestamps();
         });

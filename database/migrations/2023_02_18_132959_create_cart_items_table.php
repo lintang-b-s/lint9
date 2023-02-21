@@ -16,7 +16,8 @@ class CreateCartItemsTable extends Migration
         Schema::create('cart_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->nullable()->index('fk_cart_items_to_products');
-            $table->foreignId('cart_id')->nullable()->index('fk_cart_items_to_carts');
+            // $table->foreignId('cart_id')->nullable()->index('fk_cart_items_to_carts');
+            $table->string('cart_id')->nullable()->index('fk_cart_items_to_carts');
             $table->string('sku');
             $table->float('price');
             $table->float('discount');

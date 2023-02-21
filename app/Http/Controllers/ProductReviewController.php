@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProductReview as ProductReviewResource;
 use App\Models\ProductReview;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ class ProductReviewController extends Controller
      */
     public function index()
     {
-        //
+     //
     }
 
     /**
@@ -35,7 +36,12 @@ class ProductReviewController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user = app('Dingo\Api\Auth\Auth')->user();
+   
+        $data = $request->all();
+        $data['author_id'] = $user->user_id;
+        
+
     }
 
     /**
@@ -46,7 +52,10 @@ class ProductReviewController extends Controller
      */
     public function show(ProductReview $productReview)
     {
-        //
+        $query = ProductReview::query()->with('title')->with('rating');
+      
+        return response()->json(['data'=>ProductReviewResource::collection($query->paginate(6))]);
+
     }
 
     /**

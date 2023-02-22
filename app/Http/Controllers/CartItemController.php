@@ -84,11 +84,11 @@ class CartItemController extends Controller
     }
 
 
-    public function addNotes(Request $request,Product $productId) {
+    public function addNotes(Request $request,CartItem $cartItemId) {
         $data = $request->all();
         $cart = $request->session()->get('cart');
         $notes = $data['note'];
-        CartItem::where('product_id', '=', $product_id)->where('cart_id', '=', $cart['session_id'])->update(['note' =>   $notes]);
+        CartItem::where('id', $cartItemId->id)->update(['note' =>   $notes]);
 
         return response()->json(['message' => 'successfully add notes ']);
     }

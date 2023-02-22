@@ -36,7 +36,8 @@ class StoreOrderRequest extends FormRequest
             'return_reason' => 'min:3|required|max:255',
             'shipper_id' => 'integer',
             'freight' => 'min:3|required|max:255',
-            'status' => 'string'
+            'status' => 'string',
+            
 
         ];
     }

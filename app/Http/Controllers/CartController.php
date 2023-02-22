@@ -12,6 +12,7 @@ use App\Http\Requests\ApplyDiscountToCartRequest;
 use App\Http\Resources\Cart as CartResource;
 use App\Http\Requests\Cart\RemoveFromCartRequest;
 use App\Http\Requests\Cart\ApplyProductDiscountToCartItemRequest;
+use App\Http\Resources\CartItem as CartItemResource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -33,7 +34,7 @@ class CartController extends Controller
     {
         if ($request->session()->has('cart')) {
             $cartSession = $request->session()->get('cart');
-            $this->authorize('view', $cart);
+            $this->authorize('view', $cartSession);
         }
         else {
             return response()->json([
@@ -41,10 +42,12 @@ class CartController extends Controller
             ], 404);
         }
        
-        $cart = Cart::findOrFail( $cartSession->session_id); 
+        $cart = Cart::findOrFail($cartSession->session_id); 
+        $cartItem = $cart->my_cart_items()->get()->load('product');
      
 
-        return response()->json(['data' => new CartResource($cartSession)]);
+        return response()->json(['data' => ['cart' => new CartResource($cartSession),
+            'cart-items' =>  CartItemResource::collection($cartItem)]]);
     }
 
     /**
@@ -143,7 +146,7 @@ class CartController extends Controller
         $cartId = uniqid();
         
         if (!$cart) {
-
+          
             $cartDB = Cart::create([
                 'id'=> $cartId ,
                 'customer_id' => $user->user_id,
@@ -159,8 +162,8 @@ class CartController extends Controller
                 'postal_code' =>  $address->postal_code,
                 'country' =>  $address->country,
             ]);
-
             $cartDB['session_id'] = $cartId;
+           
             $discount = $product->discount->discount_percent;
             $pPriceAfDiscountApplied = $product->unit_price - ( $product->unit_price * $discount/100 );
             $cartItemNew = CartItem::create([
@@ -220,6 +223,7 @@ class CartController extends Controller
                  else {
                      $cart['total'] = $cart['subtotal'];
                  }
+
                 $request->session()->put('cart', $cart );
             }
         }
@@ -234,8 +238,16 @@ class CartController extends Controller
         $product = Product::findOrFail($product_id)->load('supplier')->load('discount')
         ->load('category')->load('product_review');
     
-        $cart = $request->session()->get('cart');
-        $this->authorize('removeFromCart', $cart);
+        if ($request->session()->has('cart')) {
+            $cart = $request->session()->get('cart');
+            $this->authorize('removeFromCart', $cart);
+
+        }
+        else {
+            return response()->json([
+                'message' => 'Record not found.'
+            ], 404);
+        }
         $user  = app('Dingo\Api\Auth\Auth')->user()->load('address');
         $address;
         foreach($user->address as $add) {
@@ -246,6 +258,11 @@ class CartController extends Controller
 
         $cartItem = CartItem::where('product_id', '=', $product_id)->where('cart_id', '=', $cart['session_id'])->firstOrFail();
         
+        if ($quantity > $cartItem->quantity) {
+            return response()->json([
+                'message' => 'Kuantitas melebihi kuantitas item keranjang'
+            ], 400);
+        }
       
         if ($request->filled('note')){
             $cartItem->update(['note' => $data['note'], 'quantity' => DB::raw('quantity - '. $quantity)]);
@@ -333,11 +350,12 @@ class CartController extends Controller
     
 
     // bisa apply diskon ke produk saat di page cart
-    public function applyProductDiscountToCartItem(ApplyProductDiscountToCartItemRequest $request)
+    public function applyProductDiscountToCartItem(ApplyProductDiscountToCartItemRequest $request, $cartId)
     {
         $data = $request->all();
         $discount_id = $data['discount_id'];
 
+        $cart;
         if ($request->session()->has('cart')) {
             $cart = $request->session()->get('cart');
             $this->authorize('applyDiscountToCart', $cart);
@@ -350,23 +368,47 @@ class CartController extends Controller
         }
 
         $discount = Discount::where('id', $discount_id)->where('for_customer', 1)->first();
-
-        $query = CartItem::where('product_id', '=', $product_id)->where('cart_id', '=', $cart['session_id']);
+        // $query = CartItem::where('product_id', '=', $product_id)->where('cart_id', '=', $cart['session_id']);
+        $query = CartItem::where('id', $cartId);
         $cartItem = $query->first();
+    
         $productPrice = $cartItem->price;
-        if ($discount->discount_price){
-            $productPrice =  $productPrice - $discount->discount_price;
+        $cart['subtotal'] -= $productPrice  * $cartItem->quantity;
+        $cart['total'] -= $productPrice* $cartItem->quantity;
+        $cart = $request->session()->put('cart', $cart);
+        $cart = $request->session()->get('cart');
+        if ($cartItem->discount_price) {
+            return response()->json([
+                'message' => 'syarat diskon tidak terpenuhi.'
+            ], 400);
         }
+        if ($productPrice > $discount->minimal_price) {
+            if ($discount->discount_price){
+                $productPrice =  $productPrice - $discount->discount_price;
+                $query->update(['price' => $productPrice, 'discount_price' => $discount->discount_price]);
+            }
+            else {
+                $productPrice =  $productPrice  - ($cartItem->price * ($discount->discount_percent/100));
+                $query->update(['price' => $productPrice ]);
+
+            }
+        }   
         else {
-            $productPrice =  $productPrice  - ($cartItem->price * ($discount->discount_percent/100));
+            return response()->json([
+                'message' => 'syarat diskon tidak terpenuhi.'
+            ], 400);
         }
 
-        $query->update(['price' => $productPrice]);
+        // update harrga subtotal dan total cart session
+        $cart['subtotal'] += $productPrice  * $cartItem->quantity;
+        $cart['total'] += $productPrice  * $cartItem->quantity;
+        $cart = $request->session()->put('cart', $cart);
+
 
         return response()->json(['message' => 'successfully add discount to product']);
     }
 
-    public function removeProductDiscountFromCartItem(ApplyProductDiscountToCartItemRequest $request)
+    public function removeProductDiscountFromCartItem(ApplyProductDiscountToCartItemRequest $request, $cartId)
     {
         $data = $request->all();
         $discount_id = $data['discount_id'];
@@ -384,9 +426,19 @@ class CartController extends Controller
 
         $discount = Discount::where('id', $discount_id)->where('for_customer', 1)->first();
 
-        $query = CartItem::where('product_id', '=', $product_id)->where('cart_id', '=', $cart['session_id']);
+        $query = CartItem::where('id', $cartId);
         $cartItem = $query->first();
+        if (!$cartItem->discount_price)
+        {
+            return response()->json([
+                'message' => 'syarat diskon tidak terpenuhi.'
+            ], 400);
+        }
         $productPrice = $cartItem->price;
+        $cart['subtotal'] -= $productPrice  * $cartItem->quantity;
+        $cart['total'] -= $productPrice* $cartItem->quantity;
+        $cart = $request->session()->put('cart', $cart);
+        $cart = $request->session()->get('cart');
         if ($discount->discount_price){
             $productPrice =  $productPrice + $discount->discount_price;
         }
@@ -394,7 +446,11 @@ class CartController extends Controller
             $productPrice =  $productPrice  + ($cartItem->price * ($discount->discount_percent/100));
         }
 
-        $query->update(['price' => $productPrice]);
+        $query->update(['price' => $productPrice, 'discount_price' => null]);
+
+        $cart['subtotal'] += $productPrice  * $cartItem->quantity;
+        $cart['total'] += $productPrice  * $cartItem->quantity;
+        $cart = $request->session()->put('cart', $cart);
 
         return response()->json(['message' => 'successfully add discount to product']);
     }

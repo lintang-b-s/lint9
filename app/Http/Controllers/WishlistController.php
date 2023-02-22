@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use App\Models\Product;
-use App\Http\Resources\Product as ProductResource;
+use App\Http\Resources\Product\Product as ProductResource;
 class WishlistController extends Controller
 {
     /**
@@ -89,7 +89,7 @@ class WishlistController extends Controller
 
         $user  = app('Dingo\Api\Auth\Auth')->user();
 
-        $wishlist = Wishlist::where('customer_id', $user->user_id )->where('produt_id', $productRes->id)->first();
+        $wishlist = Wishlist::where('customer_id', $user->user_id )->where('product_id', $productRes->id)->first();
 
         if (!$wishlist) {
             Wishlist::create([

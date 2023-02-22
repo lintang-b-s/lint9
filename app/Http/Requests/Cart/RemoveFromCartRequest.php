@@ -26,7 +26,7 @@ class RemoveFromCartRequest extends FormRequest
         return [
             'id' => 'string',
             'product_id' => 'integer|required',
-            'quantity' => 'integer|required',
+            'quantity' => 'integer|required|min:1',
             'content' => 'string',
             'note' =>'string'
         ];

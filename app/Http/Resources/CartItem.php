@@ -20,7 +20,7 @@ class CartItem extends JsonResource
         return [
             'id' => $this->id,
             'product' => new ProductResource($this->whenLoaded('product')),
-            'cart' => new CartResource($this->whenLoaded('cart')),
+            // 'cart' => new CartResource($this->whenLoaded('cart')),
             'sku' => $this->sku,
             'price' => $this->price,
             'discount' => $this->discount,

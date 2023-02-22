@@ -195,11 +195,12 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
         * Orders
         */
         $api->group(['prefix' => 'orders'], function (Router $api) {
-            $api->get('/', 'App\Http\Controllers\OrderController@getAll');
-            $api->get('/{uuid}', 'App\Http\Controllers\OrderController@get');
-            $api->post('/', 'App\Http\Controllers\OrderController@post');
-            $api->patch('/{uuid}', 'App\Http\Controllers\OrderController@patch');
-            $api->delete('/{uuid}', 'App\Http\Controllers\OrderController@delete');
+            $api->get('/', 'App\Http\Controllers\OrderController@index');
+            $api->get('/{orderId}', 'App\Http\Controllers\OrderController@show');
+            $api->post('/', 'App\Http\Controllers\OrderController@store');
+            $api->patch('/{orderId}', 'App\Http\Controllers\OrderController@update');
+            // $api->delete('/{uuid}', 'App\Http\Controllers\OrderController@destroy');
+            // $api->post('', 'App\Http\Controllers\OrderController@');
         });
 
         /*
@@ -305,7 +306,11 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
             $api->post('/addToCart', 'App\Http\Controllers\CartController@addToCart');
             $api->post('/removeFromCart', 'App\Http\Controllers\CartController@removeFromCart');
             $api->put('/applyDiscountToCart', 'App\Http\Controllers\CartController@applyDiscountToCart');
-            $api->put('/applyProductDiscount', 'App\Http\Controllers\CartController@applyProductDiscountToCartItem');
+            // removeDiscountFromCart
+            $api->put('/removeDiscountFromCart', 'App\Http\Controllers\CartController@removeDiscountFromCart');
+
+            $api->put('/{cartId}/applyProductDiscount', 'App\Http\Controllers\CartController@applyProductDiscountToCartItem');
+            $api->put('/{cartId}/removeProductDiscount', 'App\Http\Controllers\CartController@removeProductDiscountFromCartItem');
 
 
         });
@@ -313,13 +318,13 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
         /*
         * CartItems
         */
-        $api->group(['prefix' => 'cart-items'], function (Router $api) {
+        $api->group(['prefix' => 'cart-items', 'middleware' => ['sessions']], function (Router $api) {
             $api->get('/', 'App\Http\Controllers\CartItemController@getAll');
             $api->get('/{uuid}', 'App\Http\Controllers\CartItemController@get');
             $api->post('/', 'App\Http\Controllers\CartItemController@post');
             $api->patch('/{uuid}', 'App\Http\Controllers\CartItemController@patch');
             $api->delete('/{uuid}', 'App\Http\Controllers\CartItemController@delete');
-            $api->post('/{productId}/addNotes', 'App\Http\Controllers\CartItemController@addNotes');
+            $api->put('/{cartItemId}/addNotes', 'App\Http\Controllers\CartItemController@addNotes');
         });
 
         /*

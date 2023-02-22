@@ -52,13 +52,13 @@ class ProductController extends Controller
                     $sortDirection = Str::startsWith($sortColumn, '-') ? 'desc' : 'asc';
                     $sortColumn = ltrim($sortColumn, '-');
                     
-                    // if ($sortColumn != 'review') {
+                    if ($sortColumn != 'review') {
                     $query->orderBy($sortColumn, $sortDirection);
-                    // }
-                    // else {
+                    }
+                    else {
                     
-                    //     $query->orderBy('product_review_count', $sortDirection);
-                    // }
+                        $query->orderBy('product_review_count', $sortDirection);
+                    }
                 }
             }
             return $query;

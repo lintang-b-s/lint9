@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ChangeCartsTable extends Migration
+class ChangeDiscountsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,12 @@ class ChangeCartsTable extends Migration
      */
     public function up()
     {
-        //
-        Schema::table('carts', function (Blueprint $table) {
-            $table->text('payload');
-            $table->integer('last_activity')->index();
-            $table->foreignId('user_id')->nullable()->index();
-            $table->string('ip_address', 45)->nullable();
-            $table->text('user_agent')->nullable();
+        Schema::table('discounts', function (Blueprint $table) {
+          
+            $table->boolean('for_customer')->nullable();
+            $table->float('minimal_price')->nullable();
+            $table->float('discount_price')->nullable();
+            $table->date('expires')->nullable();
 
         });
     }

@@ -27,8 +27,6 @@ class CreateSuppliersTable extends Migration
             $table->string('notes')->nullable();
             $table->longText('logo')->nullable();
             $table->uuid('customer_id');
-
-
             $table->foreign('customer_id')->references('user_id')->on('users')->onUpdate('cascade')->onDelete('cascade');
 
 

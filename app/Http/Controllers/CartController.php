@@ -11,6 +11,7 @@ use App\Http\Requests\Cart\AddToCartRequest;
 use App\Http\Requests\ApplyDiscountToCartRequest;
 use App\Http\Resources\Cart as CartResource;
 use App\Http\Requests\Cart\RemoveFromCartRequest;
+use App\Http\Requests\Cart\ApplyProductDiscountToCartItemRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -32,6 +33,7 @@ class CartController extends Controller
     {
         if ($request->session()->has('cart')) {
             $cartSession = $request->session()->get('cart');
+            $this->authorize('view', $cart);
         }
         else {
             return response()->json([
@@ -159,13 +161,8 @@ class CartController extends Controller
             ]);
 
             $cartDB['session_id'] = $cartId;
-          
-
-          
             $discount = $product->discount->discount_percent;
-
             $pPriceAfDiscountApplied = $product->unit_price - ( $product->unit_price * $discount/100 );
-            
             $cartItemNew = CartItem::create([
                 'product_id' =>$product->id,
                 'cart_id' => $cartId,
@@ -175,10 +172,7 @@ class CartController extends Controller
                 'quantity' => $quantity ,
                 'active' => 1,
             ]);
-
-          
             $cartDB['subtotal'] = $cartItemNew->price * $cartItemNew->quantity;
-
             // itung total price nya di show cart session
             $request->session()->put('cart', $cartDB );
         }
@@ -197,6 +191,17 @@ class CartController extends Controller
                     'active' => 1,
                 ]);
                 $cart['subtotal'] += $cartItemNew->price * $quantity;
+
+                 // logic buat total harga setelah diskon
+                 $discount_id =   $cart['discount_id'] ;
+                 if ($discount_id) {
+                     $discount = Discount::where('id', $discount_id)->first();
+                     $cart['total'] = $cart['subtotal'] - ($cart['subtotal'] * ($discount->discount_percent/100));
+                 }
+                 else {
+                     $cart['total'] = $cart['subtotal'];
+                 }
+             
                 $request->session()->put('cart', $cart );
 
             }
@@ -205,7 +210,16 @@ class CartController extends Controller
                 $cartItem->update(['note' => $data['note'], 'quantity' => DB::raw('quantity + '. $quantity)]);
                
                 $cart['subtotal'] += $cartItem->first()->price * $quantity;
-             
+
+                 // logic buat total harga setelah diskon
+                 $discount_id =   $cart['discount_id'] ;
+                 if ($discount_id) {
+                     $discount = Discount::where('id', $discount_id)->first();
+                     $cart['total'] = $cart['subtotal'] - ($cart['subtotal'] * ($discount->discount_percent/100));
+                 }
+                 else {
+                     $cart['total'] = $cart['subtotal'];
+                 }
                 $request->session()->put('cart', $cart );
             }
         }
@@ -221,7 +235,7 @@ class CartController extends Controller
         ->load('category')->load('product_review');
     
         $cart = $request->session()->get('cart');
-        $this->authorize('addToCart', $cart);
+        $this->authorize('removeFromCart', $cart);
         $user  = app('Dingo\Api\Auth\Auth')->user()->load('address');
         $address;
         foreach($user->address as $add) {
@@ -240,22 +254,31 @@ class CartController extends Controller
             $cartItem->update([ 'quantity' => DB::raw('quantity - '. $quantity)]);
         }
 
+        $cart['subtotal'] -= $cartItem->price * $quantity;
 
+         // logic buat total harga setelah diskon
+         $discount_id =   $cart['discount_id'] ;
+         if ($discount_id) {
+             $discount = Discount::where('id', $discount_id)->first();
+             $cart['total'] = $cart['subtotal'] - ($cart['subtotal'] * ($discount->discount_percent/100));
+         }
+         else {
+             $cart['total'] = $cart['subtotal'];
+         }
 
-    //    dd($cartItem->refresh()->quantity);
+         $request->session()->put('cart', $cart );
+        //  dd($cartItem->refresh()->quantity);
         if ($cartItem->refresh()->quantity < 1 ) {
             CartItem::where('product_id', '=', $product_id)->where('cart_id', '=', $cart['session_id'])->forceDelete();
         }
 
         $cartItems = CartItem::where('cart_id', '=', $cart['session_id'])->get();
-        if (sizeof($cartItems)  < 1)
+        if (sizeof($cartItems)  < 1) // hapus cart jika cart kosong
         {
-    
             Cart::where('id', '=',  $cart['session_id'])->forceDelete();
             $request->session()->pull('cart', $cart );
         
         }
-        
 
         return response()->json(['message' => 'cart successfully deleted']);
     }
@@ -268,16 +291,111 @@ class CartController extends Controller
 
         if ($request->session()->has('cart')) {
             $cart = $request->session()->get('cart');
+            $this->authorize('applyDiscountToCart', $cart);
+
         }
         else {
             return response()->json([
                 'message' => 'Record not found.'
             ], 404);
         }
+        $cart['discount_id'] = $discount_id;
         $cart['total'] = $cart['subtotal'] - ($cart['subtotal'] * ($discount->discount_percent/100));
         
         $request->session()->put('cart', $cart );
 
         return response()->json(['message' => 'discount successfullly applied to cart'], 201);
+    }
+
+    public function removeDiscountFromCart(ApplyDiscountToCartRequest $request)
+    {
+        $data = $request->all();
+        $discount_id = $data['discount_id'];
+
+        if ($request->session()->has('cart')) {
+            $cart = $request->session()->get('cart');
+            $this->authorize('applyDiscountToCart', $cart);
+
+        }
+        else {
+            return response()->json([
+                'message' => 'Record not found.'
+            ], 404);
+        }
+        $cart['discount_id'] = $discount_id;
+        $cart['total'] = $cart['subtotal'];
+        
+        $request->session()->put('cart', $cart );
+
+        return response()->json(['message' => 'discount successfullly removed from cart'], 201);
+    }
+
+    
+
+    // bisa apply diskon ke produk saat di page cart
+    public function applyProductDiscountToCartItem(ApplyProductDiscountToCartItemRequest $request)
+    {
+        $data = $request->all();
+        $discount_id = $data['discount_id'];
+
+        if ($request->session()->has('cart')) {
+            $cart = $request->session()->get('cart');
+            $this->authorize('applyDiscountToCart', $cart);
+
+        }
+        else {
+            return response()->json([
+                'message' => 'Record not found.'
+            ], 404);
+        }
+
+        $discount = Discount::where('id', $discount_id)->where('for_customer', 1)->first();
+
+        $query = CartItem::where('product_id', '=', $product_id)->where('cart_id', '=', $cart['session_id']);
+        $cartItem = $query->first();
+        $productPrice = $cartItem->price;
+        if ($discount->discount_price){
+            $productPrice =  $productPrice - $discount->discount_price;
+        }
+        else {
+            $productPrice =  $productPrice  - ($cartItem->price * ($discount->discount_percent/100));
+        }
+
+        $query->update(['price' => $productPrice]);
+
+        return response()->json(['message' => 'successfully add discount to product']);
+    }
+
+    public function removeProductDiscountFromCartItem(ApplyProductDiscountToCartItemRequest $request)
+    {
+        $data = $request->all();
+        $discount_id = $data['discount_id'];
+
+        if ($request->session()->has('cart')) {
+            $cart = $request->session()->get('cart');
+            $this->authorize('applyDiscountToCart', $cart);
+
+        }
+        else {
+            return response()->json([
+                'message' => 'Record not found.'
+            ], 404);
+        }
+
+        $discount = Discount::where('id', $discount_id)->where('for_customer', 1)->first();
+
+        $query = CartItem::where('product_id', '=', $product_id)->where('cart_id', '=', $cart['session_id']);
+        $cartItem = $query->first();
+        $productPrice = $cartItem->price;
+        if ($discount->discount_price){
+            $productPrice =  $productPrice + $discount->discount_price;
+        }
+        else {
+            $productPrice =  $productPrice  + ($cartItem->price * ($discount->discount_percent/100));
+        }
+
+        $query->update(['price' => $productPrice]);
+
+        return response()->json(['message' => 'successfully add discount to product']);
     }
 }

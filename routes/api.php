@@ -305,6 +305,9 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
             $api->post('/addToCart', 'App\Http\Controllers\CartController@addToCart');
             $api->post('/removeFromCart', 'App\Http\Controllers\CartController@removeFromCart');
             $api->put('/applyDiscountToCart', 'App\Http\Controllers\CartController@applyDiscountToCart');
+            $api->put('/applyProductDiscount', 'App\Http\Controllers\CartController@applyProductDiscountToCartItem');
+
+
         });
 
         /*
@@ -316,6 +319,7 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
             $api->post('/', 'App\Http\Controllers\CartItemController@post');
             $api->patch('/{uuid}', 'App\Http\Controllers\CartItemController@patch');
             $api->delete('/{uuid}', 'App\Http\Controllers\CartItemController@delete');
+            $api->post('/{productId}/addNotes', 'App\Http\Controllers\CartItemController@addNotes');
         });
 
         /*
@@ -369,6 +373,20 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
             $api->post('/', 'App\Http\Controllers\SupplierTypeController@post');
             $api->patch('/{uuid}', 'App\Http\Controllers\SupplierTypeController@patch');
             $api->delete('/{uuid}', 'App\Http\Controllers\SupplierTypeController@delete');
+        });
+
+        /*
+        * Wishlists
+        */
+        $api->group(['prefix' => 'wishlists'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\WishlistController@getAll');
+            $api->get('/{uuid}', 'App\Http\Controllers\WishlistController@get');
+            $api->post('/', 'App\Http\Controllers\WishlistController@post');
+            $api->patch('/{uuid}', 'App\Http\Controllers\WishlistController@patch');
+            $api->delete('/{uuid}', 'App\Http\Controllers\WishlistController@delete');
+            $api->post('/{productId}', 'App\Http\Controllers\WishlistController@addToWishlist');
+            $api->delete('/{productId}', 'App\Http\Controllers\WishlistController@removeFromWishlist');
+
         });
     });
 });

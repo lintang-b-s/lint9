@@ -4,7 +4,7 @@ namespace App\Http\Requests\Cart;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AddToCartRequest extends FormRequest
+class ApplyProductDiscountToCartItemRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -16,8 +16,6 @@ class AddToCartRequest extends FormRequest
         return true;
     }
 
-    
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -26,11 +24,7 @@ class AddToCartRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'string',
-            'product_id' => 'integer|required',
-            'quantity' => 'integer|required',
-            'content' => 'string',
-            'note' =>'string'
-                ];
+            'discount_id' => 'integer'
+        ];
     }
 }

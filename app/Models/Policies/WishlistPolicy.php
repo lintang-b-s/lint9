@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models\Policies;
+namespace App\Policies\..\Models\Policies;
 
-use App\Models\Cart;
 use App\Models\User;
+use App\Models\Wishlist;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class CartPolicy
+class WishlistPolicy
 {
     use HandlesAuthorization;
 
@@ -25,13 +25,12 @@ class CartPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Cart  $cart
+     * @param  \App\Models\Wishlist  $wishlist
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Cart $cart) {
-        if ($cart->customer_id == $user->user_id) {
-            return true;
-        }
+    public function view(User $user, Wishlist $wishlist)
+    {
+        //
     }
 
     /**
@@ -49,10 +48,10 @@ class CartPolicy
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Cart  $cart
+     * @param  \App\Models\Wishlist  $wishlist
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Cart $cart)
+    public function update(User $user, Wishlist $wishlist)
     {
         //
     }
@@ -61,10 +60,10 @@ class CartPolicy
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Cart  $cart
+     * @param  \App\Models\Wishlist  $wishlist
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Cart $cart)
+    public function delete(User $user, Wishlist $wishlist)
     {
         //
     }
@@ -73,10 +72,10 @@ class CartPolicy
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Cart  $cart
+     * @param  \App\Models\Wishlist  $wishlist
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Cart $cart)
+    public function restore(User $user, Wishlist $wishlist)
     {
         //
     }
@@ -85,33 +84,11 @@ class CartPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Cart  $cart
+     * @param  \App\Models\Wishlist  $wishlist
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Cart $cart)
+    public function forceDelete(User $user, Wishlist $wishlist)
     {
         //
     }
-
-    public function addToCart(User $user, Cart $cart) {
-        if ($cart->customer_id == $user->user_id) {
-            return true;
-        }
-    }
-
-    public function removeFromCart(User $user, Cart $cart) {
-        if ($cart->customer_id == $user->user_id) {
-            return true;
-        }
-    }
-
-    public function applyDiscountToCart(User $user, Cart $cart) {
-        if ($cart->customer_id == $user->user_id) {
-            return true;
-        }
-    }
-
-
-
-
 }

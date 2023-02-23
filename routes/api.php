@@ -393,6 +393,52 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
             $api->delete('/{productId}', 'App\Http\Controllers\WishlistController@removeFromWishlist');
 
         });
+
+
+        /*
+        * Shipments
+        */
+        $api->group(['prefix' => 'shipments'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\ShipmentController@getAll');
+            $api->get('/{uuid}', 'App\Http\Controllers\ShipmentController@get');
+            $api->post('/', 'App\Http\Controllers\ShipmentController@post');
+            $api->patch('/{uuid}', 'App\Http\Controllers\ShipmentController@patch');
+            $api->delete('/{uuid}', 'App\Http\Controllers\ShipmentController@delete');
+        });
+
+        /*
+        * ShipmentTypes
+        */
+        $api->group(['prefix' => 'shipment-types'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\ShipmentTypeController@getAll');
+            $api->get('/{uuid}', 'App\Http\Controllers\ShipmentTypeController@get');
+            $api->post('/', 'App\Http\Controllers\ShipmentTypeController@post');
+            $api->patch('/{uuid}', 'App\Http\Controllers\ShipmentTypeController@patch');
+            $api->delete('/{uuid}', 'App\Http\Controllers\ShipmentTypeController@delete');
+        });
+
+        /*
+        * ShipmentStatuses
+        */
+        $api->group(['prefix' => 'shipment-statuses'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\ShipmentStatusController@getAll');
+            $api->get('/{uuid}', 'App\Http\Controllers\ShipmentStatusController@get');
+            $api->post('/', 'App\Http\Controllers\ShipmentStatusController@post');
+            $api->patch('/{uuid}', 'App\Http\Controllers\ShipmentStatusController@patch');
+            $api->delete('/{uuid}', 'App\Http\Controllers\ShipmentStatusController@delete');
+        });
+
+
+        /*
+        * OrderStatuses
+        */
+        $api->group(['prefix' => 'order-statuses'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\OrderStatusController@getAll');
+            $api->get('/{uuid}', 'App\Http\Controllers\OrderStatusController@get');
+            $api->post('/', 'App\Http\Controllers\OrderStatusController@post');
+            $api->patch('/{uuid}', 'App\Http\Controllers\OrderStatusController@patch');
+            $api->delete('/{uuid}', 'App\Http\Controllers\OrderStatusController@delete');
+        });
     });
 });
 

@@ -26,7 +26,8 @@ class CartItem extends JsonResource
             'discount' => $this->discount,
             'quantity' => $this->quantity,
             'active' => $this->active,
-            'note' => $this->note
+            'note' => $this->note,
+            'discount_price' => $this->discount_price,
         ];
     }
 }

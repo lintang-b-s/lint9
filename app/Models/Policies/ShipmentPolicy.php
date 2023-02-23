@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Models\Policies;
+namespace App\Policies\..\Models\Policies;
 
-use App\Models\Order;
-use App\Models\Cart;
+use App\Models\Shipment;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class OrderPolicy
+class ShipmentPolicy
 {
     use HandlesAuthorization;
 
@@ -26,10 +25,10 @@ class OrderPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Order  $order
+     * @param  \App\Models\Shipment  $shipment
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Order $order)
+    public function view(User $user, Shipment $shipment)
     {
         //
     }
@@ -49,10 +48,10 @@ class OrderPolicy
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Order  $order
+     * @param  \App\Models\Shipment  $shipment
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Order $order)
+    public function update(User $user, Shipment $shipment)
     {
         //
     }
@@ -61,24 +60,22 @@ class OrderPolicy
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Order  $order
+     * @param  \App\Models\Shipment  $shipment
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Cart $cart)
+    public function delete(User $user, Shipment $shipment)
     {
-        if ($cart->customer_id == $user->user_id) {
-            return true;
-        }
+        //
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Order  $order
+     * @param  \App\Models\Shipment  $shipment
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Order $order)
+    public function restore(User $user, Shipment $shipment)
     {
         //
     }
@@ -87,10 +84,10 @@ class OrderPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Order  $order
+     * @param  \App\Models\Shipment  $shipment
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Order $order)
+    public function forceDelete(User $user, Shipment $shipment)
     {
         //
     }

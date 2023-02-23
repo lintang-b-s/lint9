@@ -28,4 +28,9 @@ class Discount extends Model
     {
         return $this->hasMany('App\Models\Product', 'discount_id');
     }
+
+    public function order()
+    {
+        return $this->hasMany('App\Models\Order', 'discount_id');
+    }
 }

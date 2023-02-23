@@ -37,5 +37,9 @@ class DatabaseSeeder extends Seeder
         $this->call(PivotProductCategoriesSeeder::class);
         $this->call(SupplierTypesSeeder::class);
         $this->call(WishlistsSeeder::class);
+        $this->call(OrderStatusesSeeder::class);
+        $this->call(ShipmentTypesSeeder::class);
+        $this->call(ShipmentStatusesSeeder::class);
+        $this->call(ShipmentsSeeder::class);
     }
 }

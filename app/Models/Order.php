@@ -20,16 +20,30 @@ class Order extends Model
 
     protected $fillable = [
         'customer_id',
+        'session_id',
+        'content',
+        'type',
+        'token',
+        'sub_total',
+        'item_discount',
+        'tax',
+        'shipping',
+        'total',
+        'discount',
+        'grand_total',
+        'name',
+        'email',
+        'phone',
+        'address_line',
+        'city',
+        'postal_code',
+        'country',
         'order_number',
         'payment_id',
         'order_date',
         'payment_date',
         'ship_date',
-        'delivered_date',
-        'cancel_date',
-        'return_date',
-        'return_reason',
-        'shipper_id',
+        'discount_id',
         'freight',
         'status'
     ];
@@ -54,6 +68,21 @@ class Order extends Model
     public function order_item()
     {
         return $this->hasMany('App\Models\OrderItem', 'order_id');
+    }
+
+    public function discount()
+    {
+        return $this->belongsTo('App\Models\Discount', 'discount_id', 'id');
+    }
+
+    public function status()
+    {
+        return $this->hasMany('App\Models\OrderStatus', 'order_id');
+    }
+
+    public function shipment()
+    {
+        return $this->hasMany('App\Models\Shipment', 'order_id');
     }
 
 }

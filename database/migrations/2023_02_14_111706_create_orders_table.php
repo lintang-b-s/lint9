@@ -39,17 +39,9 @@ class CreateOrdersTable extends Migration
             $table->string('country');
             $table->dateTime('order_date');
             $table->dateTime('payment_date')->nullable();
-            $table->dateTime('required_date')->nullable();
+            // $table->dateTime('required_date')->nullable();
             $table->foreignId('payment_id')->nullable()->index('fk_orders_to_payments');
-
-
-            $table->foreignId('shipper_id')->nullable()->index('fk_orders_to_shippers');
-            // $table->foreign('shipper_id', 'fk_orders_to_shippers')->references('id')->on('shippers')->onUpdate('CASCADE')->onDelete('CASCADE');
-
             $table->string('freight')->nullable();
-
-
-
             $table->timestamps();
             $table->softDeletes();
         });

@@ -17,6 +17,8 @@ class CreatePaymentsTable extends Migration
             $table->id();
             $table->string('payment_type');
             $table->boolean('allowed')->nullable();
+            $table->string('provider')->nullable();
+            $table->string('no_va')->nullable();
             $table->timestamps();
         });
     }

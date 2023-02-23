@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Shipper extends Model
+class OrderStatus extends Model
 {
     use HasFactory;
 
-    public $table = 'shippers';
+    public $table = 'order_statuses';
 
     protected $dates = [
         'created_at',
@@ -18,14 +18,15 @@ class Shipper extends Model
     ];
 
     protected $fillable = [
-        'company_name',
-        'phone'
+        'id',
+        'name',
+        'status_date',
+        'reason',
+        'order_id'
     ];
 
-
-    public function shipment_type()
+    public function order()
     {
-        return $this->hasMany('App\Models\ShipmentType', 'shipper_id');
+        return $this->belongsTo('App\Models\Order', 'order_id', 'id');
     }
-    
 }

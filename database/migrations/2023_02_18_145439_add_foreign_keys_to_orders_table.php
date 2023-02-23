@@ -15,7 +15,7 @@ class AddForeignKeysToOrdersTable extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             //
-            $table->foreign('shipper_id', 'fk_orders_to_shippers')->references('id')->on('shippers')->onUpdate('CASCADE')->onDelete('CASCADE');
+            // $table->foreign('shipper_id', 'fk_orders_to_shippers')->references('id')->on('shippers')->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->foreign('payment_id', 'fk_orders_to_payments')->references('id')->on('payments')->onUpdate('CASCADE')->onDelete('CASCADE');
 
         });
@@ -29,7 +29,7 @@ class AddForeignKeysToOrdersTable extends Migration
     public function down()
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->dropForeign('fk_orders_to_shippers');
+            // $table->dropForeign('fk_orders_to_shippers');
             $table->dropForeign('fk_orders_to_payments');
 
         });

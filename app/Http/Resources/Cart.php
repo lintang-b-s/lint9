@@ -36,6 +36,7 @@ class Cart extends JsonResource
             'postal_code' => $this->postal_code,
             'subtotal' => $this->subtotal,
             'country' => $this->country,
+            'discount_id' => $this->discount_id,
             'total' => $this->total
         ];
     }

@@ -30,11 +30,11 @@
         "barryvdh/laravel-ide-helper": "^2.9",
         "beyondcode/laravel-dump-server": "^1.4",
         "facade/ignition": "^2.7",
-        "fakerphp/faker": "^1.9.1",
+        "fakerphp/faker": "^1.21",
+        "laravel/telescope": "^4.4",
         "mockery/mockery": "^1.4.1",
         "nunomaduro/collision": "^5.0",
-        "phpunit/phpunit": "^9.3.3",
-        "laravel/telescope": "^4.4"
+        "phpunit/phpunit": "^9.3.3"
     },
     "autoload": {
         "psr-4": {

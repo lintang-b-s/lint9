@@ -39,6 +39,7 @@ class CreateOrdersTable extends Migration
             $table->string('country');
             $table->dateTime('order_date');
             $table->dateTime('payment_date')->nullable();
+            $table->unsignedBigInteger('ship_type_id');
             // $table->dateTime('required_date')->nullable();
             $table->foreignId('payment_id')->nullable()->index('fk_orders_to_payments');
             $table->string('freight')->nullable();

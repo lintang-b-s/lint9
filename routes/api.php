@@ -199,6 +199,7 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
             $api->get('/{orderId}', 'App\Http\Controllers\OrderController@show');
             $api->post('/', 'App\Http\Controllers\OrderController@store');
             $api->patch('/{orderId}', 'App\Http\Controllers\OrderController@update');
+
             // $api->delete('/{uuid}', 'App\Http\Controllers\OrderController@destroy');
             // $api->post('', 'App\Http\Controllers\OrderController@');
         });
@@ -426,6 +427,16 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
             $api->post('/', 'App\Http\Controllers\ShipmentStatusController@post');
             $api->patch('/{uuid}', 'App\Http\Controllers\ShipmentStatusController@patch');
             $api->delete('/{uuid}', 'App\Http\Controllers\ShipmentStatusController@delete');
+            $api->post('/{shipment}/receivedByCourier', 'App\Http\Controllers\OrderController@receivedByCourier');
+            $api->post('/{shipment}/sentFromHub', 'App\Http\Controllers\OrderController@sentFromHub');
+            $api->post('/{shipment}/arrivedAtWarehouseFr', 'App\Http\Controllers\OrderController@arrivedAtWarehouseFr');
+            $api->post('/{shipment}/sentFromWarehouseFr', 'App\Http\Controllers\OrderController@sentFromWarehouseFr');
+            $api->post('/{shipment}/arrivedAtWarehouseDest', 'App\Http\Controllers\OrderController@arrivedAtWarehouseDest');
+            $api->post('/{shipment}/sentFromWarehouseDest', 'App\Http\Controllers\OrderController@sentFromWarehouseDest');
+            $api->post('/{shipment}/arrivedAtWarehouse', 'App\Http\Controllers\OrderController@arrivedAtWarehouse');
+            $api->post('/{shipment}/inDelivery', 'App\Http\Controllers\OrderController@inDelivery');
+            $api->post('/{shipment}/received', 'App\Http\Controllers\OrderController@received');
+
         });
 
 
@@ -438,6 +449,10 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
             $api->post('/', 'App\Http\Controllers\OrderStatusController@post');
             $api->patch('/{uuid}', 'App\Http\Controllers\OrderStatusController@patch');
             $api->delete('/{uuid}', 'App\Http\Controllers\OrderStatusController@delete');
+            $api->post('/{order}/payments', 'App\Http\Controllers\OrderStatusController@storePayment');
+            $api->post('/{order}/packeds', 'App\Http\Controllers\OrderStatusController@packedStatus');
+            $api->put('/{order}/settle', 'App\Http\Controllers\OrderStatusController@settle');
+
         });
     });
 });

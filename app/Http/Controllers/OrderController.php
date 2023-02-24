@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Cart;
+use App\Models\CartItem;
+use App\Models\Shipment;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreOrderRequest;
 use Illuminate\Support\Facades\Http;
@@ -122,6 +125,12 @@ class OrderController extends Controller
             'payment_id' => $data['payment_id'],
             'freight' => $freight,
             'discount_id' => $data['discount_id'],
+            'ship_type_id' => $data['ship_type'],
+        ]);
+
+        $order->status()->save([
+            'name' => 'pending',
+            'status_date' => Carbon::now(),
         ]);
 
         foreach ($cartItems as $cartItem) {
@@ -138,11 +147,10 @@ class OrderController extends Controller
         }
 
         $order->status()->save([
-            'name' => 'Pending',
+            'name' => 'pending',
             'status_date' => Carbon::now(),
         ]);
-
-
+       
 
         $request->session()->pull('cart', $cart );
     }

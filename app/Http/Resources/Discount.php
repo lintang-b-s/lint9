@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\Product\Product as ProductResource;
+use App\Http\Resources\Order as OrderResource;
 
 class Discount extends JsonResource
 {
@@ -22,6 +23,7 @@ class Discount extends JsonResource
             'discount_percent' => $this->discount_percent,
             'active' => $this->active,
             'product' => ProductResource::collection($this->whenLoaded('product')),
+            'order' => OrderResource::collection($this->whenLoaded('order')),
         ];
     }
 }

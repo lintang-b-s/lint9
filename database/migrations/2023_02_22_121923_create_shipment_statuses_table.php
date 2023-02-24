@@ -17,6 +17,7 @@ class CreateShipmentStatusesTable extends Migration
             $table->id();
             $table->string('title');
             $table->string('location');
+            $table->string('message');
             $table->dateTime('status_date');
             $table->foreignId('ship_id')->nullable()->index('fk_shipment_statuses_to_shipments');
             $table->foreign('ship_id', 'fk_shipment_statuses_to_shipments')->references('id')->on('shipments')->onUpdate('CASCADE')->onDelete('CASCADE');

@@ -21,6 +21,7 @@ class Shipment extends Model
         'id',
         'resi',
         'ship_type_id',
+        'supplier_id',
         'order_id',
     ];
 

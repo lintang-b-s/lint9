@@ -17,6 +17,7 @@ class OrderItem extends JsonResource
     {
         // return parent::toArray($request,);
         return [
+            'id' => $this->id,
             'product_id' => $this->product_id,
             'price' => $this->price,
             'quantity'=> $this->quantity,
@@ -28,6 +29,8 @@ class OrderItem extends JsonResource
             'delivered_date'=> $this->delivered_date,
             'order' => new OrderResource($this->whenLoaded('order')),
             'product' => new ProductResource($this->whenLoaded('product')),
+            'discount_price' => $this->discount_price,
+            'note' => $this->note,
 
         ];
     }

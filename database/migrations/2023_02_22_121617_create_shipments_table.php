@@ -19,7 +19,7 @@ class CreateShipmentsTable extends Migration
             $table->foreignId('ship_type_id')->nullable()->index('fk_shipments_to_shipment_types');
             $table->foreignId('order_id')->nullable()->index('fk_shipments_to_orders');
             $table->foreign('order_id', 'fk_shipments_to_orders')->references('id')->on('orders')->onUpdate('CASCADE')->onDelete('CASCADE');
-
+            $table->unsignedBigInteger('supplier_id');
             $table->timestamps();
         });
     }

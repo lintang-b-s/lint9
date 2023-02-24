@@ -45,7 +45,8 @@ class Order extends Model
         'ship_date',
         'discount_id',
         'freight',
-        'status'
+        'status',
+        'ship_type_id'
     ];
 
 
@@ -60,10 +61,7 @@ class Order extends Model
         return $this->belongsTo('App\Models\Payment', 'payment_id', 'id');
     }
 
-    public function shipper()
-    {
-        return $this->belongsTo('App\Models\Shipper', 'shipper_id', 'id');
-    }
+
 
     public function order_item()
     {
@@ -82,7 +80,7 @@ class Order extends Model
 
     public function shipment()
     {
-        return $this->hasMany('App\Models\Shipment', 'order_id');
+        return $this->hasOne('App\Models\Shipment', 'order_id');
     }
 
 }

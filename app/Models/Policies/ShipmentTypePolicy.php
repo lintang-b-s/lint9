@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies\..\Models\Policies;
+namespace App\Models\Policies;
 
 use App\Models\ShipmentType;
 use App\Models\User;
@@ -19,6 +19,7 @@ class ShipmentTypePolicy
     public function viewAny(User $user)
     {
         //
+        return true;
     }
 
     /**
@@ -42,6 +43,17 @@ class ShipmentTypePolicy
     public function create(User $user)
     {
         //
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+       $adminRole = false;
+
+       foreach ($userRole->role as $role) {
+           if ($role->name == 'superadmin') {
+               $adminRole = true;
+           }
+       }
+       
+       return $adminRole;
     }
 
     /**
@@ -53,7 +65,18 @@ class ShipmentTypePolicy
      */
     public function update(User $user, ShipmentType $shipmentType)
     {
-        //
+          //
+          $userWithRole = $user->load('role');
+          $userRole = new UserResource($userWithRole);
+         $adminRole = false;
+  
+         foreach ($userRole->role as $role) {
+             if ($role->name == 'superadmin') {
+                 $adminRole = true;
+             }
+         }
+         
+         return $adminRole;
     }
 
     /**
@@ -65,7 +88,18 @@ class ShipmentTypePolicy
      */
     public function delete(User $user, ShipmentType $shipmentType)
     {
-        //
+          //
+          $userWithRole = $user->load('role');
+          $userRole = new UserResource($userWithRole);
+         $adminRole = false;
+  
+         foreach ($userRole->role as $role) {
+             if ($role->name == 'superadmin') {
+                 $adminRole = true;
+             }
+         }
+         
+         return $adminRole;
     }
 
     /**

@@ -6,8 +6,14 @@ use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Http\Resources\Product\Product as ProductResource;
+use App\Http\Resources\Wishlist as WishlistResource;
 class WishlistController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')
+            ->only(['create', 'store', 'edit', 'update', 'destroy', 'addToWishlist', 'removeFromWishlist']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +21,10 @@ class WishlistController extends Controller
      */
     public function index()
     {
-        //
+        $user  = app('Dingo\Api\Auth\Auth')->user();
+        $wishlists = Wishlist::where('customer_id', $user)->get();
+        
+        return response()->json(['data' => WishlistResource::collection($wishlists)]);
     }
 
     /**
@@ -85,18 +94,17 @@ class WishlistController extends Controller
     }
 
     public function addToWishlist(Request $request,Product $productId){
+        $this->authorize('wishlists.addToWishlist');
+
         $productRes = new ProductResource($productId);
-
         $user  = app('Dingo\Api\Auth\Auth')->user();
-
-        $wishlist = Wishlist::where('customer_id', $user->user_id )->where('product_id', $productRes->id)->first();
-
+        $wishlistQuery = Wishlist::where('customer_id', $user->user_id )->where('product_id', $productRes->id);
+        $wishlist = $wishlistQuery->first();
         if (!$wishlist) {
             Wishlist::create([
                 'customer_id' => $user->user_id,
                 'product_id' => $productRes->id,
             ]);
-
             return response()->json(['message' => 'successfully add product to wishlist']);
         }
         else {
@@ -108,14 +116,10 @@ class WishlistController extends Controller
         $productRes = new ProductResource($productId);
 
         $user  = app('Dingo\Api\Auth\Auth')->user();
-
         $wishlist = Wishlist::where('customer_id', $user->user_id )->where('product_id', $productRes->id)->first();
-
+        $this->authorize('wishlists.removeFromWishlist', $wishlist);
         if ($wishlist) {
             Wishlist::where('customer_id' , $user->user_id)->where('product_id', $productRes->id)->forceDelete();
-
-
-
             return response()->json(['message' => 'successfully remove product from your wishlist']);
         }
         else {

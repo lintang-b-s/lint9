@@ -4,9 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use App\Http\Resources\Supplier as SupplierResource;
+use App\Http\Requests\StoreSupplierRequest;
+use App\Http\Requests\UpdateSupplierRequest;
 
 class SupplierController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')
+            ->only(['create', 'store', 'edit', 'update', 'destroy']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +22,11 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        //
+        $this->authorize('suppliers.viewAny');
+
+        $suppliers = Supplier::all();
+
+        return response()->json(['data' =>  SupplierResource::collection($suppliers)]);
     }
 
     /**
@@ -33,9 +45,13 @@ class SupplierController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreSupplierRequest $request)
     {
-        //
+        $this->authorize('suppliers.create');
+        $data = $request->all();
+
+        $supplier = Supplier::create($data);
+        return response()->json(['data' => new SupplierResource($supplier)]);
     }
 
     /**
@@ -46,7 +62,9 @@ class SupplierController extends Controller
      */
     public function show(Supplier $supplier)
     {
-        //
+        
+        return response()->json(['data' =>new  SupplierResource($supplier->load('product')->load('customer'))]);
+
     }
 
     /**
@@ -67,9 +85,13 @@ class SupplierController extends Controller
      * @param  \App\Models\Supplier  $supplier
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Supplier $supplier)
+    public function update(UpdateSupplierRequest $request, Supplier $supplier)
     {
-        //
+        $this->authorize('suppliers.update');
+        $data = $request->all();
+
+        $updatedSupplier = $supplier->update($data);
+        return response()->json(['data' => new SupplierResource($updatedSupplier)]);
     }
 
     /**
@@ -80,6 +102,10 @@ class SupplierController extends Controller
      */
     public function destroy(Supplier $supplier)
     {
-        //
+        $this->authorize('suppliers.delete');
+       
+
+         $supplier->forceDelete();
+        return response()->json(['message' => 'supplier deleted successfully']);
     }
 }

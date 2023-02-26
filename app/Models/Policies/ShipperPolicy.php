@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Policies\..\Models\Policies;
+namespace App\Models\Policies;
 
 use App\Models\Shipper;
 use App\Models\User;
+use App\Models\User as UserResource;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ShipperPolicy
@@ -42,6 +43,18 @@ class ShipperPolicy
     public function create(User $user)
     {
         //
+
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+        $adminRole = false;
+
+       foreach ($userRole->role as $role) {
+           if ($role->name == 'superadmin') {
+               $adminRole = true;
+           }
+       }
+       
+       return $adminRole ;
     }
 
     /**
@@ -54,6 +67,18 @@ class ShipperPolicy
     public function update(User $user, Shipper $shipper)
     {
         //
+
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+        $adminRole = false;
+
+       foreach ($userRole->role as $role) {
+           if ($role->name == 'superadmin') {
+               $adminRole = true;
+           }
+       }
+       
+       return $adminRole ;  
     }
 
     /**
@@ -65,7 +90,17 @@ class ShipperPolicy
      */
     public function delete(User $user, Shipper $shipper)
     {
-        //
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+        $adminRole = false;
+
+       foreach ($userRole->role as $role) {
+           if ($role->name == 'superadmin') {
+               $adminRole = true;
+           }
+       }
+       
+       return $adminRole ;
     }
 
     /**

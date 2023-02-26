@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies\..\Models\Policies;
+namespace App\Models\Policies;
 
 use App\Models\User;
 use App\Models\UserAddress;
@@ -18,7 +18,7 @@ class UserAddressPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -30,7 +30,7 @@ class UserAddressPolicy
      */
     public function view(User $user, UserAddress $userAddress)
     {
-        //
+        return $userAddress->user_id == $user->user_id;
     }
 
     /**
@@ -41,7 +41,7 @@ class UserAddressPolicy
      */
     public function create(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -53,7 +53,7 @@ class UserAddressPolicy
      */
     public function update(User $user, UserAddress $userAddress)
     {
-        //
+        return $userAddress->user_id == $user->user_id;
     }
 
     /**
@@ -65,7 +65,7 @@ class UserAddressPolicy
      */
     public function delete(User $user, UserAddress $userAddress)
     {
-        //
+        return $userAddress->user_id == $user->user_id;
     }
 
     /**

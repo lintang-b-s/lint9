@@ -12,6 +12,7 @@ use App\Http\Requests\UpdateDiscountRequest;
 use App\Http\Requests\Discount\AddDiscountToProductsRequest;
 use App\Http\Requests\AddDiscountToSuppliersTypeRequest;
 use App\Http\Requests\AddDiscountToCategories;
+use App\Http\Requests\Discount\AddDiscountToSupplierRequest;
 use App\Http\Resources\Discount as DiscountResource;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -23,7 +24,8 @@ class DiscountController extends Controller
     public function __construct()
     {
         $this->middleware('auth')
-            ->only(['create', 'store', 'edit', 'update', 'destroy', 'addDiscountToProducts']);
+            ->only(['create', 'store', 'edit', 'update', 'delete','destroy', 'addDiscountToProducts',
+            'addDiscountToCategories', 'addDiscountToSuppliersType', 'addDiscountToSupplier']);
     }
 
     /**
@@ -34,7 +36,6 @@ class DiscountController extends Controller
     public function index()
     {
         return response()->json(['data' => DiscountResource::collection(Product::all()->load('product'))]);
-
     }
 
     /**
@@ -55,15 +56,13 @@ class DiscountController extends Controller
      */
     public function store(StoreDiscountRequest $request)
     {
-      
-
-
         $this->authorize('discounts.create');
 
         $data = $request->all();
         $discount = Discount::create($data);
 
-        return response()->json(['data' => new DiscountResource($discount)]);
+        return response()->json(['data' => new DiscountResource($discount), 
+            'message' => 'succesfully created discount']);
 
 
     }
@@ -76,7 +75,9 @@ class DiscountController extends Controller
      */
     public function show(Discount $discount)
     {
-        //
+        $this->authorize('discounts.view');
+
+        return response()->json(['data' => new DiscountResource($discount)]);
     }
 
     /**
@@ -104,11 +105,8 @@ class DiscountController extends Controller
         $data = $request->all();
         
         $discount->update($data);
-        
-
-        return response()->json(['data' => new DiscountResource($discount->refresh())]);
-
-
+        return response()->json(['data' => new DiscountResource($discount->refresh()),
+            'message' => 'successfully updated discount']);
     }
 
     /**
@@ -120,10 +118,7 @@ class DiscountController extends Controller
     public function destroy(Discount $discount)
     {
         $this->authorize('discounts.delete', $discount);
-
         $discount->forceDelete();
-
-        
         return response()->json(['message' => 'post was succesfuly deleted']);
 
     }
@@ -133,11 +128,7 @@ class DiscountController extends Controller
         $this->authorize('addDiscountToProducts', $discount);
 
         $data = $request->all();
-
-
         $data['discount_id'] = $discount->id;
-   
-
         $product = Product::whereIn('id', $data['product_id'])
             ->update(['discount_id' => $data['discount_id'] ]);
 
@@ -158,8 +149,7 @@ class DiscountController extends Controller
             $query->whereIn('category_id', $data['category_id']);
                 
                 return $query;
-        }
-      
+            }
         );
         $product->update(['discount_id' =>  $data['discount_id'] ]);
         return response()->json(['message' => 'discount was succcesfully applied']);
@@ -171,19 +161,13 @@ class DiscountController extends Controller
         $this->authorize('addDiscountToSuppliersType', $discount);
 
         $data = $request->all();
-
         $data['discount_id'] = $discount->id;
         $query = Product::query()->with('supplier');
-
         $product = $query->whereHas('supplier', function  (Builder $query) use ($data , $discount){
-           
-            
             $query->whereHas('tier', function (Builder $query) use ($data, $discount) {
-
-                $query->whereIn('tier_id', $data['tier_id']);
+                $query->whereIn('supplier_types.id', $data['tier_id']);
                 return $query;
             });
-                
             return $query;
             }
         );
@@ -191,4 +175,18 @@ class DiscountController extends Controller
         return response()->json(['message' => 'discount was succcesfully applied']);
     }
 
+    public function addDiscountToSupplier(AddDiscountToSupplierRequest $request, Discount $discount)
+    {
+        $this->authorize('addDiscountToSupplier', $discount);
+        $data = $request->all();
+        $data['discount_id'] = $discount->id;
+        $query = Product::query()->with('supplier');
+         $product = $query->whereHas('supplier', function  (Builder $query) use ($data , $discount){
+            $query->whereIn('suppliers.id', $data['supplier_id']);
+            return $query;
+            }
+        );
+        $product->update(['discount_id' =>  $data['discount_id'] ]);
+        return response()->json(['message' => 'discount was succcesfully applied']);
+    }
 }

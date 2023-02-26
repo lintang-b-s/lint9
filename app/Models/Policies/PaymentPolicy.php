@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies\..\Models\Policies;
+namespace App\Models\Policies;
 
 use App\Models\Payment;
 use App\Models\User;
@@ -18,7 +18,7 @@ class PaymentPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -41,7 +41,17 @@ class PaymentPolicy
      */
     public function create(User $user)
     {
-        //
+        $userWithRole = $user->load('role');
+         $userRole = new UserResource($userWithRole);
+        $adminRole = false;
+
+        foreach ($userRole->role as $role) {
+            if ($role->name == 'superadmin') {
+                $adminRole = true;
+            }
+        }
+        
+        return $adminRole;
     }
 
     /**
@@ -53,7 +63,17 @@ class PaymentPolicy
      */
     public function update(User $user, Payment $payment)
     {
-        //
+        $userWithRole = $user->load('role');
+         $userRole = new UserResource($userWithRole);
+        $adminRole = false;
+
+        foreach ($userRole->role as $role) {
+            if ($role->name == 'superadmin') {
+                $adminRole = true;
+            }
+        }
+        
+        return $adminRole;
     }
 
     /**
@@ -65,7 +85,17 @@ class PaymentPolicy
      */
     public function delete(User $user, Payment $payment)
     {
-        //
+        $userWithRole = $user->load('role');
+         $userRole = new UserResource($userWithRole);
+        $adminRole = false;
+
+        foreach ($userRole->role as $role) {
+            if ($role->name == 'superadmin') {
+                $adminRole = true;
+            }
+        }
+        
+        return $adminRole;
     }
 
     /**

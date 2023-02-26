@@ -159,4 +159,49 @@ class OrderStatusController extends Controller
 
         return response()->json(['message' => 'order statsu changed successfully']);
     }
+
+    public function cancel(Order $order) 
+    {
+        if (end($order->status)->name != 'pending') {
+            return response()->json([
+                'message' => 'Pesanan sudah diproses'
+            ], 400);
+        }
+
+        $oder->status()->save([
+            'name' => 'cancel',
+            'status_date' => Carbon::now(),
+            'reason' => 'dibatalkan pembeli'
+        ]);
+
+        return response()->json(['message' => 'order status chaged succesfully']);
+    }
+
+
+    public function return(Order $order)
+    {  
+     
+        foreach( $order->shipment as $shipment) {
+            if (end($shipment->shipment_status)->title != 'terkirim') {
+                return response()->json([
+                    'message' => 'Pesanan tidak dikirim'
+                ], 400);
+            }
+        }
+
+        if (end($order->status)->name != 'sent') {
+            return response()->json([
+                'message' => 'Pesanan belum dikirim'
+            ], 400);
+        }
+
+        $order->status()->save([
+            'name' => 'return',
+            'status_date' => Carbon::now(),
+            'reason' => 'dibatalkan pembeli'
+        ]);
+
+        return response()->json(['message' => 'order status chaged succesfully']);
+    }
+
 }

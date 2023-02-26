@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies\..\Models\Policies;
+namespace App\Models\Policies;
 
 use App\Models\User;
 use App\Models\UserPayment;
@@ -18,7 +18,7 @@ class UserPaymentPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -30,7 +30,7 @@ class UserPaymentPolicy
      */
     public function view(User $user, UserPayment $userPayment)
     {
-        //
+        return true;
     }
 
     /**
@@ -42,6 +42,7 @@ class UserPaymentPolicy
     public function create(User $user)
     {
         //
+        return true;
     }
 
     /**
@@ -54,6 +55,7 @@ class UserPaymentPolicy
     public function update(User $user, UserPayment $userPayment)
     {
         //
+        return $user->user_id == $userPayment->user_id;
     }
 
     /**
@@ -65,7 +67,7 @@ class UserPaymentPolicy
      */
     public function delete(User $user, UserPayment $userPayment)
     {
-        //
+        return $user->user_id == $userPayment->user_id;
     }
 
     /**

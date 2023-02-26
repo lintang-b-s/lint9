@@ -63,14 +63,11 @@ class ProductCategoryController extends Controller
     public function store(StoreProductCategoryRequest $request)
     {
         $this->authorize('product_categories.create');
-
         $data = $request->all();
-
         $path = public_path('app/public/assets/file-category');
         if(!File::isDirectory($path)){
             $response = Storage::makeDirectory('public/assets/file-category');
         }
-
         // change file locations
         if(isset($data['picture'])){
             $data['picture'] = $request->file('picture')->store(
@@ -78,9 +75,7 @@ class ProductCategoryController extends Controller
             );
         }else{
             $data['picture'] = "";
-
         }
-
         $productCategory = ProductCategory::create($data);
 
         return response()->json(['data' => new ProductCategoryResource($productCategory)]);
@@ -124,15 +119,10 @@ class ProductCategoryController extends Controller
         $data = $request->all();
 
         if(isset($data['picture'])){
-
-            // first checking old picture to delete from storage
            $get_item = $productCategory['picture'];
-
-           // change file locations
            $data['picture'] = $request->file('picture')->store(
                'assets/file-category', 'public'
            );
-
            // delete old picture from storage
            $data_old = 'storage/'.$get_item;
            if (File::exists($data_old)) {
@@ -140,9 +130,7 @@ class ProductCategoryController extends Controller
            }else{
                File::delete('storage/app/public/'.$get_item);
            }
-
        }
-
        $productCategory->update($data);
 
        if ($request->filled('product_id'))
@@ -166,17 +154,13 @@ class ProductCategoryController extends Controller
         $this->authorize('product_categories.delete', $productCategory);
 
         $get_item = $productCategory['picture'];
-
         $data = 'storage/'.$get_item;
-
         if (File::exists($data)) {
             File::delete($data);
         }else{
             File::delete('storage/app/public/'.$get_item);
         };
-
         $productCategory->forceDelete();
-
         return response()->json(['message' => 'product category succesfully deleted']);
     }
 }

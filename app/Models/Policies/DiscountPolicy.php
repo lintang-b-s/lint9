@@ -20,7 +20,7 @@ class DiscountPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -32,7 +32,7 @@ class DiscountPolicy
      */
     public function view(User $user, Discount $discount)
     {
-        //
+        return true;
     }
 
     /**
@@ -184,14 +184,24 @@ class DiscountPolicy
         $userWithRole = $user->load('role');
         $userRole = new UserResource($userWithRole);
        $adminRole = false;
-
-
        foreach ($userRole->role as $role) {
            if ($role->name == 'superadmin') {
                $adminRole = true;
            }
        }
+       return $adminRole  ;
+    }
 
+    public function  addDiscountToSupplier(User $user, Discount $discount)
+    {
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+       $adminRole = false;
+       foreach ($userRole->role as $role) {
+           if ($role->name == 'superadmin') {
+               $adminRole = true;
+           }
+       }
        return $adminRole  ;
     }
 }

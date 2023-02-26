@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Payment;
+namespace App\Http\Requests\ShipmentType;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StorePaymentRequest extends FormRequest
+class StoreShipmentTypeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,7 @@ class StorePaymentRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return false;
     }
 
     /**
@@ -23,11 +23,9 @@ class StorePaymentRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'payment_type' => 'min:3|required|max:255',
-            'allowed' => 'boolean',
-            'provider' => 'string|min:2|required',
-            'no_va' => 'string|min:3',
-        ];
+        // return [
+        //     'name' => 'string|min:3|required',
+        //     'received_date' => 
+        // ];
     }
 }

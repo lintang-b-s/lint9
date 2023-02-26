@@ -80,7 +80,7 @@ class Order extends Model
 
     public function shipment()
     {
-        return $this->hasOne('App\Models\Shipment', 'order_id');
+        return $this->hasMany('App\Models\Shipment', 'order_id');
     }
 
 }

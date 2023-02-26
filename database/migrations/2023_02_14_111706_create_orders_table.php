@@ -22,7 +22,7 @@ class CreateOrdersTable extends Migration
             $table->string('content');
             $table->string('type');
             $table->string('token');
-            $table->string('status');
+        
             $table->float('subTotal');
             $table->float('itemDiscount');
             $table->float('tax');

@@ -90,6 +90,11 @@ class ShipmentStatusController extends Controller
 
     public function receivedByCourier(Shipment $shipment)
     {
+        $shipment->order->status()->save([
+            'name' => 'sent',
+            'status_date' => Carbon::now(),
+        ]);
+
         $locationFrom = $shipment->shipment_status[0]->location;
 
         $shipment->shipment_status()->save([

@@ -4,9 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\ShipmentType;
 use Illuminate\Http\Request;
+use App\Http\Resources\ShipmentType as ShipmentTypeResource;
 
 class ShipmentTypeController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth')
+            ->only(['create', 'store', 'edit', 'update', 'destroy', 'viewAny']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,6 +22,10 @@ class ShipmentTypeController extends Controller
     public function index()
     {
         //
+        $this->authorize('shipment_types.viewAny');
+
+        $shipperTypes = ShipmentType::get()->load('shipment')->load('shipment');
+        return response()->json(['data' => ShipmentTypeResource::collection($shipperTypes)]);
     }
 
     /**
@@ -36,6 +47,12 @@ class ShipmentTypeController extends Controller
     public function store(Request $request)
     {
         //
+        $this->authorize('shipment_types.create');
+
+        $data = $requesst->all();
+
+        $shipmentType = ShipmentType::create($data);
+        return response()->json(['data' => new ShipmentTypeResource($shipmentType)]);
     }
 
     /**
@@ -69,7 +86,12 @@ class ShipmentTypeController extends Controller
      */
     public function update(Request $request, ShipmentType $shipmentType)
     {
-        //
+        $this->authorize('shipment_types.update');
+
+        $data = $requesst->all();
+
+        $shipmentType = $shipmentType->update($data);
+        return response()->json(['data' => new ShipmentTypeResource($shipmentType)]);
     }
 
     /**
@@ -80,6 +102,11 @@ class ShipmentTypeController extends Controller
      */
     public function destroy(ShipmentType $shipmentType)
     {
-        //
+        $this->authorize('shipment_types.update');
+
+        $data = $requesst->all();
+
+        $shipmentType->forceDelete();
+        return response()->json(['message' => 'shipmentype deleted']);
     }
 }

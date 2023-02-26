@@ -4,9 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\CartItem;
 use Illuminate\Http\Request;
-
+use App\Http\Requests\AddNotesRequest;
 class CartItemController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')
+            ->only(['create', 'store', 'edit', 'update', 'destroy', 'addNotes']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -84,7 +89,8 @@ class CartItemController extends Controller
     }
 
 
-    public function addNotes(Request $request,CartItem $cartItemId) {
+    public function addNotes(AddNotesRequest $request,CartItem $cartItemId) {
+        $this->authorize('addNotes', $cart);
         $data = $request->all();
         $cart = $request->session()->get('cart');
         $notes = $data['note'];

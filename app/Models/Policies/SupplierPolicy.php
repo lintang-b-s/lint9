@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies\..\Models\Policies;
+namespace App\Models\Policies;
 
 use App\Models\Supplier;
 use App\Models\User;
@@ -19,6 +19,8 @@ class SupplierPolicy
     public function viewAny(User $user)
     {
         //
+
+        return true;
     }
 
     /**
@@ -41,7 +43,17 @@ class SupplierPolicy
      */
     public function create(User $user)
     {
-        //
+        $userWithRole = $user->load('role');
+            $userRole = new UserResource($userWithRole);
+        $adminRole = false;
+
+        foreach ($userRole->role as $role) {
+            if ($role->name == 'supplier') {
+                $adminRole = true;
+            }
+        }
+        
+        return $adminRole ;
     }
 
     /**
@@ -53,7 +65,17 @@ class SupplierPolicy
      */
     public function update(User $user, Supplier $supplier)
     {
-        //
+        $userWithRole = $user->load('role');
+            $userRole = new UserResource($userWithRole);
+        $adminRole = false;
+
+        foreach ($userRole->role as $role) {
+            if ($role->name == 'supplier') {
+                $adminRole = true;
+            }
+        }
+        
+        return $adminRole  && $supplier->customer_id == $user->user_id;
     }
 
     /**
@@ -65,7 +87,17 @@ class SupplierPolicy
      */
     public function delete(User $user, Supplier $supplier)
     {
-        //
+        $userWithRole = $user->load('role');
+            $userRole = new UserResource($userWithRole);
+        $adminRole = false;
+
+        foreach ($userRole->role as $role) {
+            if ($role->name == 'supplier') {
+                $adminRole = true;
+            }
+        }
+        
+        return $adminRole  && $supplier->customer_id == $user->role;
     }
 
     /**

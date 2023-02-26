@@ -7,14 +7,21 @@ use App\Models\OrderItem;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Shipment;
+use App\Models\ShipmentType;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreOrderRequest;
 use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
+use App\Http\Resources\Order as OrderResource;
 
 
 class OrderController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')
+            ->only(['create', 'store', 'edit', 'update', 'destroy']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -23,6 +30,41 @@ class OrderController extends Controller
     public function index()
     {
         //
+        $this->authorize('orders.viewAny');
+        $query = Order::query()->with('payment')->with('discount')->with('order_item')->with('status');
+
+        $query->where(function ($query) {
+            if (request()->filled('filter') ){
+            $filters = explode('&', request('filter'));
+
+            foreach ($filters as $filter) {
+                [$criteria, $value] = explode(':', $filter);
+
+                $query->where(function ($query) use($criteria, $value) { 
+                   $query->whereHas($criteria , function (Builder $query) use ($value, $criteria){
+                        $query->where( function($query) use($criteria, $value){
+                            if ($criteria == 'status') {
+                            $status_ids = collect(explode(',', $value))
+                                ->map(fn($i) => trim($i))
+                                ->all();
+                            $query->whereIn('order_statuses.id', $status_ids);
+                            }
+                        });
+                        return $query;
+                    }); 
+                    
+                });
+             
+            }
+        }
+
+            return $query;
+            
+        });
+
+
+        return response()->json(['data' => OrderResource::collection($query->paginate(20))]);
+
     }
 
     /**
@@ -62,6 +104,8 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request)
     {
+        $this->authorize('orders.create');
+
         $data = $request->all();
         $cart = $request->session()->get('cart');
         if (isset($cart['customer_id'])) {
@@ -103,6 +147,8 @@ class OrderController extends Controller
         }
 
         $user  = app('Dingo\Api\Auth\Auth')->user()->load('address');
+
+        // order per toko
         $order = Order::create([
             'customer_id' => $user->user_id,
             'content' => $data['content'],
@@ -153,6 +199,8 @@ class OrderController extends Controller
        
 
         $request->session()->pull('cart', $cart );
+
+        return response()->json(['message' => 'order successfully created!', 'data' => new OrderResource($order)]);
     }
 
     /**

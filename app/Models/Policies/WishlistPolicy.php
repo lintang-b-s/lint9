@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies\..\Models\Policies;
+namespace App\Models\Policies;
 
 use App\Models\User;
 use App\Models\Wishlist;
@@ -90,5 +90,15 @@ class WishlistPolicy
     public function forceDelete(User $user, Wishlist $wishlist)
     {
         //
+    }
+
+    public function addToWishlist(User $user)
+    {
+        return true;
+    }
+
+    public function removeFromWishlist(User $user, Wishlist $wishlist)
+    {
+        return $wishlist->customer_id == $user->user_id;
     }
 }

@@ -3,10 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Shipper;
+use App\Http\Requests\StorepShipperRequest;
+use App\Http\Requests\UpdateShipperRequest;
+use App\Http\Resources\Shipper as ShipperResource;
 use Illuminate\Http\Request;
 
 class ShipperController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')
+            ->only(['create', 'store', 'edit', 'update', 'destroy', 'delete']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,6 +23,9 @@ class ShipperController extends Controller
     public function index()
     {
         //
+        $query = Shipper::query()->with('shipment_type');
+
+        return response()->json(['data' => ShipperResource::collection($query->get()->load('shipment_type'))]);
     }
 
     /**
@@ -33,9 +44,14 @@ class ShipperController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreShipperRequest $request)
     {
         //
+        $data = $request->all();
+        $shipper = Shipper::create($data );
+
+        return response()->json(['message' => 'shipper succesfully created',    
+        'data' => new ShipperResouce($shipper) ]);
     }
 
     /**
@@ -67,9 +83,16 @@ class ShipperController extends Controller
      * @param  \App\Models\Shipper  $shipper
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Shipper $shipper)
+    public function update(UpdateShipperRequest $request, Shipper $shipper)
     {
         //
+        $this->authorize('shippers.update', $shipper);
+
+        $data = $request->all();
+        $shipper->update($data);
+
+        return response()->json(['message' => 'shipper succesfully updated']);
+
     }
 
     /**
@@ -81,5 +104,11 @@ class ShipperController extends Controller
     public function destroy(Shipper $shipper)
     {
         //
+        $this->authorize('shippers.delete', $shipper);
+
+        $shipper->forceDelete();
+
+        return response()->json(['message' => 'shipper succesfully deleted']);
+
     }
 }

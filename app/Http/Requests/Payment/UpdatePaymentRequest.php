@@ -24,8 +24,10 @@ class UpdatePaymentRequest extends FormRequest
     public function rules()
     {
         return [
-            'payment_type' => 'min:3|required|max:255',
+            'payment_type' => 'min:3|max:255',
             'allowed' => 'boolean',
+            'provider' => 'string|min:2',
+            'no_va' => 'string|min:3',
         ];
     }
 }

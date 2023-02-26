@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies\..\Models\Policies;
+namespace App\Models\Policies;
 
 use App\Models\CartItem;
 use App\Models\User;
@@ -90,5 +90,10 @@ class CartItemPolicy
     public function forceDelete(User $user, CartItem $cartItem)
     {
         //
+    }
+
+    public function addNotes(User $user, CartItem $cartItem)
+    {
+        return $cartItem->cart_id->customer_id == $user->user_id;
     }
 }

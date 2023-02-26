@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies\..\Models\Policies;
+namespace App\Models\Policies;
 
 use App\Models\SupplierType;
 use App\Models\User;
@@ -41,7 +41,17 @@ class SupplierTypePolicy
      */
     public function create(User $user)
     {
-        //
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+        $adminRole = false;
+
+        foreach ($userRole->role as $role) {
+            if ($role->name == 'superadmin') {
+                $adminRole = true;
+            }
+        }
+        
+        return $adminRole;
     }
 
     /**
@@ -53,7 +63,17 @@ class SupplierTypePolicy
      */
     public function update(User $user, SupplierType $supplierType)
     {
-        //
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+        $adminRole = false;
+
+        foreach ($userRole->role as $role) {
+            if ($role->name == 'superadmin') {
+                $adminRole = true;
+            }
+        }
+        
+        return $adminRole;
     }
 
     /**
@@ -65,7 +85,17 @@ class SupplierTypePolicy
      */
     public function delete(User $user, SupplierType $supplierType)
     {
-        //
+        $userWithRole = $user->load('role');
+        $userRole = new UserResource($userWithRole);
+        $adminRole = false;
+
+        foreach ($userRole->role as $role) {
+            if ($role->name == 'superadmin') {
+                $adminRole = true;
+            }
+        }
+        
+        return $adminRole;
     }
 
     /**

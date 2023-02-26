@@ -35,7 +35,11 @@ class StoreSupplierRequest extends FormRequest
             'type_goods' => 'min:3|required|max:255',
             'notes' =>  'min:3|required|max:255',
             'logo' => 'image|mimes:jpg,jpeg,png,gif,svg|max:10000',
-            'customer_id' => 'integer|required'
+            'customer_id' => 'integer|required',
+            'tier_id' => 'integer|required',
+            'city' => 'string|required|min:3',
+            'postal_code' => 'string|required|min:3',
+            'country' => 'string|required|min:3'
         ];
     }
 }

@@ -4,9 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\UserAddress;
 use Illuminate\Http\Request;
+use App\Http\Resources\UserAddress as UserAddressResource;
+use App\Http\Requests\StoreUserAddressRequest;
 
 class UserAddressController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')
+            ->only(['create', 'store','view', 'edit', 'update', 'destroy', 'delete']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +21,11 @@ class UserAddressController extends Controller
      */
     public function index()
     {
-        //
+        $this->authorize('user_addresses.viewAny');
+
+        $userAddresses = UserAddress::all();
+
+        return response()->json(['data' =>  UserAddressResource::collection($userAddresses)]);
     }
 
     /**
@@ -33,9 +44,17 @@ class UserAddressController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreUserAddressRequest $request)
     {
-        //
+        $this->authorize('user_addresses.create');        
+
+        $data = $request->all();
+
+        $userAddress = UserAddress::create($data);
+
+        return response()->json(['data' => new UserAddressResource($userAddress), 
+        'message' => 'successfully created user address']);
+
     }
 
     /**
@@ -47,6 +66,8 @@ class UserAddressController extends Controller
     public function show(UserAddress $userAddress)
     {
         //
+        $this->authorize('user_addresses.view', $userAddress);        
+        return response()->json(['data' =>  new UserAddressResource($userAddress)]);
     }
 
     /**
@@ -67,9 +88,16 @@ class UserAddressController extends Controller
      * @param  \App\Models\UserAddress  $userAddress
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, UserAddress $userAddress)
+    public function update(UpdateUserAddressRequest $request, UserAddress $userAddress)
     {
-        //
+        $this->authorize('user_addresses.update', $userAddress);        
+
+        $data = $request->all();
+
+        $userAddress->update($data);
+
+        return response()->json(['data' => new UserAddressResource($userAddress), 
+        'message' => 'successfully updated user address']);
     }
 
     /**
@@ -80,6 +108,13 @@ class UserAddressController extends Controller
      */
     public function destroy(UserAddress $userAddress)
     {
-        //
+        $this->authorize('user_addresses.delete', $userAddress);        
+
+      
+
+        $userAddress->forceDelete();
+
+        return response()->json([ 
+        'message' => 'successfully deleted user address']);
     }
 }

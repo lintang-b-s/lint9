@@ -110,8 +110,7 @@ class ProductController extends Controller
                                 foreach ($value as $address) {
                                     $query->where(function ($query) use ($address, $supplier_ids, $criteria, $value) {
                                         $query->where('address', 'like', '%' . $address . '%')
-                                            ->orWhereIn('supplier_id', $supplier_ids);
-
+                                            ->orWhereIn('suppliers.id', $supplier_ids);
                                     return $query;
                                     });
                                 }

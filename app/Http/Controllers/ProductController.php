@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use App\Http\Resources\Product\Product as ProductResource;
+use App\Http\Resources\ProductCategory as ProductCategoryResource;
+
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 
@@ -95,7 +98,7 @@ class ProductController extends Controller
                             $query->where( function($query) use($criteria, $value) {
                                 if ($criteria == 'category') {
                                     $category_ids = collect(explode(',', $value))
-                                    ->map(fn($i) => trim($i))
+                                    ->map(function($i) {return trim($i);} )
                                     ->all();
                                     $query->whereIn('category_id', $category_ids);
                                 }
@@ -103,7 +106,7 @@ class ProductController extends Controller
                             ->where( function ($query) use($criteria, $value){
                                 if ($criteria == 'supplier' ) {
                                 $supplier_ids = collect(explode(',', $value))
-                                    ->map(fn($i) => trim($i))
+                                    ->map(function($i) { return trim($i);}) 
                                     ->all();
 
                                 $value = explode(',',$value);
@@ -119,7 +122,7 @@ class ProductController extends Controller
                             ->where( function($query) use($criteria, $value){
                                 if ($criteria == 'discount') {
                                 $discount_ids = collect(explode(',', $value))
-                                    ->map(fn($i) => trim($i))
+                                    ->map(function($i) { return trim($i); })
                                     ->all();
                                 $query->whereIn('discount_id', $discount_ids);
                                 }
@@ -207,15 +210,33 @@ class ProductController extends Controller
     
 
         if ($request->filled('category_id')) {
-           
-            $category_id = json_decode($request->input('category_id', []), true);
-            
-            $product->category()->attach($category_id);
+            // $category_id = json_decode($request->input('category_id', []), true);
+            $category_id = $request->input('category_id');
+            $parents = [];  $category_ids = [];
+            foreach($category_id as $categoryId ) {
+                $category = ProductCategory::where('id', $categoryId)->first();
+                $categoryRes = new ProductCategoryResource($category);
+                array_push($category_ids, $categoryId);
+                $parentId = $categoryRes->parent->id;
+                while(!is_null($parentId)){
+                    array_push($category_ids,$parentId );
+                    $parent = ProductCategory::where('id', $parentId)->first();
+                    $parentRes = new ProductCategoryResource($parent);
+                    if (!is_null($parentRes->parent)) {
+                        $parentNy = $parentRes->parent;
+                        $parentId = $parentNy->id;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+            $product->category()->attach($category_ids);
         }
-
-    
         return response()->json(['data' => new ProductResource($product)]);
     }
+
+   
 
     /**
      * Display the specified resource.
@@ -276,10 +297,29 @@ class ProductController extends Controller
        $product->update($data);
 
        
-    if ($request->filled('category_id'))
-    {
-        $category_id = json_decode($request->input('category_id', []), true);
-        $product->category()->sync($category_id);
+       if ($request->filled('category_id')) {
+        // $category_id = json_decode($request->input('category_id', []), true);
+        $category_id = $request->input('category_id');
+        $parents = [];  $category_ids = [];
+        foreach($category_id as $categoryId ) {
+            $category = ProductCategory::where('id', $categoryId)->first();
+            $categoryRes = new ProductCategoryResource($category);
+            array_push($category_ids, $categoryId);
+            $parentId = $categoryRes->parent->id;
+            while(!is_null($parentId)){
+                array_push($category_ids,$parentId );
+                $parent = ProductCategory::where('id', $parentId)->first();
+                $parentRes = new ProductCategoryResource($parent);
+                if (!is_null($parentRes->parent)) {
+                    $parentNy = $parentRes->parent;
+                    $parentId = $parentNy->id;
+                }
+                else {
+                    break;
+                }
+            }
+        }
+        $product->category()->sync($category_ids);
     }
 
     return response()->json(['data' => new ProductResource($product->refresh())]);

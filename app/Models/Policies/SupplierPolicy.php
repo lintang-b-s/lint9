@@ -4,6 +4,7 @@ namespace App\Models\Policies;
 
 use App\Models\Supplier;
 use App\Models\User;
+use App\Http\Resources\UserResource;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class SupplierPolicy
@@ -32,7 +33,7 @@ class SupplierPolicy
      */
     public function view(User $user, Supplier $supplier)
     {
-        //
+        return true;
     }
 
     /**
@@ -44,13 +45,20 @@ class SupplierPolicy
     public function create(User $user)
     {
         $userWithRole = $user->load('role');
+        
             $userRole = new UserResource($userWithRole);
+    
         $adminRole = false;
 
         foreach ($userRole->role as $role) {
-            if ($role->name == 'supplier') {
+            if ($role->name == 'customer') {
                 $adminRole = true;
             }
+        }
+
+        if (isset($userRole->supplier)) 
+        {
+            $adminRole = false;
         }
         
         return $adminRole ;

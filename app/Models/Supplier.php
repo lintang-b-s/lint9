@@ -30,6 +30,10 @@ class Supplier extends Model
         'type_goods',
         'notes',
         'logo',
+        'city',
+        'tier_id',
+        'postal_code',
+        'country',
         'customer_id',
     ];
 

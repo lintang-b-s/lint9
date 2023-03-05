@@ -24,7 +24,7 @@ class UpdateSupplierRequest extends FormRequest
     public function rules()
     {
         return [
-            'company_name' => 'bail|min:3|unique:supplier|max:255',
+            'company_name' => 'bail|min:3|unique:suppliers|max:255',
             'contact_name' => 'min:3|max:255',
             'contact_title' => 'min:3|max:255',
             'address' => 'min:3|max:255',

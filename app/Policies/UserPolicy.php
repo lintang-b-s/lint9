@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use App\Http\Resources\UserResource;
 
 class UserPolicy
 {
@@ -17,6 +18,16 @@ class UserPolicy
     public function __construct()
     {
         //
+    }
+    
+    public function store()
+    {
+        return true;
+    }
+    
+    public function create()
+    {
+        return true;
     }
 
     public function addRole(User $user)

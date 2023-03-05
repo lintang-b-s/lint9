@@ -39,6 +39,7 @@ class StoreProductRequest extends FormRequest
             'ranking' => 'integer',
             'sold'=> 'integer',
             'review_total' => 'integer',
+            'category_id' => 'array'
 
         ];
     }

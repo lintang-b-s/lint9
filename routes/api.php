@@ -24,11 +24,13 @@ Route::get('/', function () {
 /** @var \Dingo\Api\Routing\Router $api */
 // ['middleware' => ['api']],
 $api = app('Dingo\Api\Routing\Router');
+
+Route::name('users.')->prefix('users')->group(function () {
+    Route::post('/', 'App\Http\Controllers\UserController@store');
+});
+
 $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
 
-    // $api->get('/hello', function() {
-    //     return 'haloo tes tes';
-    // });
     /*
      * Authentication
      */
@@ -115,7 +117,6 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
         $api->group(['prefix' => 'users', 'middleware' => 'check_role:admin'], function (Router $api) {
             $api->get('/', 'App\Http\Controllers\UserController@index');
             $api->get('/{uuid}', 'App\Http\Controllers\UserController@show');
-            // $api->post('/', 'App\Http\Controllers\UserController@store');
             $api->put('/{uuid}', 'App\Http\Controllers\UserController@put');
             $api->put('/{uuid}', 'App\Http\Controllers\UserController@update');
             $api->delete('/{uuid}', 'App\Http\Controllers\UserController@destroy');
@@ -243,10 +244,10 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
         */
         $api->group(['prefix' => 'suppliers'], function (Router $api) {
             $api->get('/', 'App\Http\Controllers\SupplierController@index');
-            $api->get('/{uuid}', 'App\Http\Controllers\SupplierController@show');
+            $api->get('/{supplier}', 'App\Http\Controllers\SupplierController@show');
             $api->post('/', 'App\Http\Controllers\SupplierController@store');
-            $api->put('/{uuid}', 'App\Http\Controllers\SupplierController@update');
-            $api->delete('/{uuid}', 'App\Http\Controllers\SupplierController@destroy');
+            $api->put('/{supplier}', 'App\Http\Controllers\SupplierController@update');
+            $api->delete('/{supplier}', 'App\Http\Controllers\SupplierController@destroy');
         });
 
         /*

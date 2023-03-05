@@ -5,6 +5,7 @@ namespace App\Models\Policies;
 use App\Models\SupplierType;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use App\Http\Resources\UserResource;
 
 class SupplierTypePolicy
 {

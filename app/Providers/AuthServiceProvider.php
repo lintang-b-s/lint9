@@ -25,7 +25,7 @@ use App\Models\Policies\CartPolicy;
 use App\Models\Policies\ShipmentTypePolicy;
 use App\Models\Policies\PaymentPolicy;
 use App\Models\Policies\SupplierPolicy;
-use App\Models\Policies\UserPolicy;
+use App\Policies\UserPolicy;
 use App\Models\Policies\UserPaymentPolicy;
 use App\Models\Policies\OrderPolicy;
 use App\Models\Policies\ShipperPolicy;

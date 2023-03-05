@@ -24,7 +24,7 @@ class StoreSupplierRequest extends FormRequest
     public function rules()
     {
         return [
-            'company_name' => 'bail|min:3|required|unique:supplier|max:255',
+            'company_name' => 'bail|min:3|required|unique:suppliers|max:255',
             'contact_name' => 'min:3|required|max:255',
             'contact_title' => 'min:3|required|max:255',
             'address' => 'min:3|required|max:255',
@@ -35,7 +35,7 @@ class StoreSupplierRequest extends FormRequest
             'type_goods' => 'min:3|required|max:255',
             'notes' =>  'min:3|required|max:255',
             'logo' => 'image|mimes:jpg,jpeg,png,gif,svg|max:10000',
-            'customer_id' => 'integer|required',
+            'customer_id' => 'string|required',
             'tier_id' => 'integer|required',
             'city' => 'string|required|min:3',
             'postal_code' => 'string|required|min:3',

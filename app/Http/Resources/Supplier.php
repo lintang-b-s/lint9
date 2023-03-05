@@ -27,7 +27,6 @@ class Supplier extends JsonResource
             'type_goods' => $this->type_goods,
             'notes' => $this->notes,
             'logo' => $this->logo,
-            'phone' => $this->phone,
             'product' => ProductResource::collection($this->whenLoaded('product')),
             'customer' => new UserResource($this->whenLoaded('customer')),
         ];

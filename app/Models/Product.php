@@ -36,16 +36,10 @@ class Product extends Model
         'ranking',
         'sold',
         'review_total',
+        
     ];
 
-    // public $sortable = ['name',
-    // 'updated_at',
-    // 'created_at',
-    // 'unit_price',
-    // ];
-
-    // protected $primaryKey = 'id';//
-
+  
    
 
     public function category() 
@@ -88,6 +82,4 @@ class Product extends Model
     {
         return $this->hasMany('App\Models\ProductReview', 'product_id');
     }
-
-
 }

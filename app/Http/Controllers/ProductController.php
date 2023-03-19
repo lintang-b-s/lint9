@@ -44,121 +44,137 @@ class ProductController extends Controller
      */
     public function index()
     {
-       $query = Product::query()->with('supplier')->with('discount')->with('category')->with('order_item')
-        ->withCount('product_review');
-
-        // handles ?sort=-updated_at,review,unit_price
-        $query->where( function($query) {
+        $query = Cache::tags(['product'])->remember("product", 60, function () {
+            return Product::query()->with('supplier')->with('discount')->with('category')->with('order_item')
+                ->withCount('product_review');
+        });
+        $query->where(function ($query) {
             if (request()->filled('sort')) {
                 $sorts = explode(',', request()->input('sort', ''));
                 foreach ($sorts as $sortColumn) {
                     $sortDirection = Str::startsWith($sortColumn, '-') ? 'desc' : 'asc';
                     $sortColumn = ltrim($sortColumn, '-');
-                    
+
                     if ($sortColumn != 'review') {
-                    $query->orderBy($sortColumn, $sortDirection);
-                    }
-                    else {
-                    
+                        $query->orderBy($sortColumn, $sortDirection);
+                    } else {
+
                         $query->orderBy('product_review_count', $sortDirection);
                     }
                 }
             }
             return $query;
-        });
+        }
+        );
 
-       
-            $query->where( function ($query) {
-                if (request()->filled('q')) {
-                $q = request()->query('q');
-                $query->where('product_name', 'like', '%' . $q . '%')
-                    ->orWhere('product_description', 'like', '%' . $q . '%')
-                    ->orWhereHas('category', function (Builder $query) use ($q) {
 
-                       
-                        $query->where('product_categories.category_name', $q);
+    $query->where(function ($query) {
+        if (request()->filled('q')) {
+            $q = request()->query('q');
+            $query->where('product_name', 'like', '%' . $q . '%')
+                ->orWhere('product_description', 'like', '%' . $q . '%')
+                ->orWhereHas('category', function (Builder $query) use ($q) {
 
-                        return $query;
-                    });
 
-                return $query;
+                    $query->where('product_categories.category_name', $q);
+
+                    return $query;
                 }
-            });
+                );
 
-            $query->where(function ($query) {
-                if (request()->filled('filter') ){
-                $filters = explode('&', request('filter'));
+            return $query;
+        }
+    }
+    );
 
-                foreach ($filters as $filter) {
-                    [$criteria, $value] = explode(':', $filter);
+    $query->where(function ($query) {
+        if (request()->filled('filter')) {
+            $filters = explode('&', request('filter'));
 
-                    $query->where(function ($query) use($criteria, $value) { 
-                       if ($criteria !='price' && $criteria != 'supplier_tier' ) { 
-                       $query->whereHas($criteria , function (Builder $query) use ($value, $criteria){
-                            $query->where( function($query) use($criteria, $value) {
+            foreach ($filters as $filter) {
+                [$criteria, $value] = explode(':', $filter);
+
+                $query->where(function ($query) use ($criteria, $value) {
+                    if ($criteria != 'price' && $criteria != 'supplier_tier') {
+                        $query->whereHas($criteria, function (Builder $query) use ($value, $criteria) {
+                            $query->where(function ($query) use ($criteria, $value) {
                                 if ($criteria == 'category') {
                                     $category_ids = collect(explode(',', $value))
-                                    ->map(function($i) {return trim($i);} )
-                                    ->all();
+                                        ->map(function ($i) {
+                                            return trim($i); }
+                                        )
+                                        ->all();
                                     $query->whereIn('category_id', $category_ids);
                                 }
-                            })
-                            ->where( function ($query) use($criteria, $value){
-                                if ($criteria == 'supplier' ) {
-                                $supplier_ids = collect(explode(',', $value))
-                                    ->map(function($i) { return trim($i);}) 
-                                    ->all();
+                            }
+                            )
+                                ->where(function ($query) use ($criteria, $value) {
+                                    if ($criteria == 'supplier') {
+                                        $supplier_ids = collect(explode(',', $value))
+                                            ->map(function ($i) {
+                                                    return trim($i); }
+                                            )
+                                            ->all();
 
-                                $value = explode(',',$value);
-                                foreach ($value as $address) {
-                                    $query->where(function ($query) use ($address, $supplier_ids, $criteria, $value) {
-                                        $query->where('address', 'like', '%' . $address . '%')
-                                            ->orWhereIn('suppliers.id', $supplier_ids);
-                                    return $query;
-                                    });
+                                        $value = explode(',', $value);
+                                        foreach ($value as $address) {
+                                            $query->where(function ($query) use ($address, $supplier_ids, $criteria, $value) {
+                                                $query->where('address', 'like', '%' . $address . '%')
+                                                    ->orWhereIn('suppliers.id', $supplier_ids);
+                                                return $query;
+                                            }
+                                            );
+                                        }
+                                    }
                                 }
+                                )
+                                ->where(function ($query) use ($criteria, $value) {
+                                    if ($criteria == 'discount') {
+                                        $discount_ids = collect(explode(',', $value))
+                                            ->map(function ($i) {
+                                                    return trim($i); }
+                                            )
+                                            ->all();
+                                        $query->whereIn('discount_id', $discount_ids);
+                                    }
                                 }
-                            })
-                            ->where( function($query) use($criteria, $value){
-                                if ($criteria == 'discount') {
-                                $discount_ids = collect(explode(',', $value))
-                                    ->map(function($i) { return trim($i); })
-                                    ->all();
-                                $query->whereIn('discount_id', $discount_ids);
-                                }
-                            });
+                                );
 
                             return $query;
-                        }); 
                         }
-                    })
+                        );
+                    }
+                }
+                )
 
 
-                        ->where(function($query) use($criteria, $value) {
+                    ->where(function ($query) use ($criteria, $value) {
                         if ($criteria == 'price') {
                             [$minPrice, $maxPrice] = explode(',', $value);
                             $query->whereBetween('unit_price', [$minPrice, $maxPrice]);
                         }
-                    })
-                    ->where(function($query) use ($criteria, $value) {
+                    }
+                    )
+                    ->where(function ($query) use ($criteria, $value) {
                         if ($criteria == 'supplier_tier') {
-                            $query->whereHas('supplier',function (Builder $query) use ($value, $criteria){
+                            $query->whereHas('supplier', function (Builder $query) use ($value, $criteria) {
                                 $query->where('tier_id', $value);
-    
-                            return $query;
-                            });
+
+                                return $query;
+                            }
+                            );
                         }
                         return $query;
-                    });
-                 
-                }
+                    }
+                    );
+
             }
+        }
 
-                return $query;
-                
-            });
+        return $query;
 
-
+    }
+    );
         return response()->json(['data' => ProductResource::collection($query->paginate(20))]);
 
     }
@@ -182,8 +198,8 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        
-        $user  = app('Dingo\Api\Auth\Auth')->user();
+
+        $user = app('Dingo\Api\Auth\Auth')->user();
 
         $this->authorize('products.create', $user);
 
@@ -192,41 +208,42 @@ class ProductController extends Controller
         $data['idsku'] = uniqid();
 
         $path = public_path('app/public/assets/file-product');
-        if(!File::isDirectory($path)){
+        if (!File::isDirectory($path)) {
             $response = Storage::makeDirectory('public/assets/file-product');
         }
 
         // change file locations
-        if(isset($data['picture'])){
+        if (isset($data['picture'])) {
             $data['picture'] = $request->file('picture')->store(
-                'assets/file-product', 'public'
+                'assets/file-product',
+                'public'
             );
-        }else{
+        } else {
             $data['picture'] = "";
 
         }
 
         $product = Product::create($data);
-    
+
 
         if ($request->filled('category_id')) {
             // $category_id = json_decode($request->input('category_id', []), true);
             $category_id = $request->input('category_id');
-            $parents = [];  $category_ids = [];
-            foreach($category_id as $categoryId ) {
+            $parents = [];
+            $category_ids = [];
+            foreach ($category_id as $categoryId) {
                 $category = ProductCategory::where('id', $categoryId)->first();
                 $categoryRes = new ProductCategoryResource($category);
                 array_push($category_ids, $categoryId);
                 $parentId = $categoryRes->parent->id;
-                while(!is_null($parentId)){
-                    array_push($category_ids,$parentId );
+                while (!is_null($parentId)) {
+                    array_push($category_ids, $parentId);
                     $parent = ProductCategory::where('id', $parentId)->first();
                     $parentRes = new ProductCategoryResource($parent);
                     if (!is_null($parentRes->parent)) {
                         $parentNy = $parentRes->parent;
                         $parentId = $parentNy->id;
-                    }
-                    else {
+                    } else {
                         break;
                     }
                 }
@@ -236,7 +253,7 @@ class ProductController extends Controller
         return response()->json(['data' => new ProductResource($product)]);
     }
 
-   
+
 
     /**
      * Display the specified resource.
@@ -246,7 +263,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        
+
         return response()->json(['data' => new ProductResource($product->load('supplier'))]);
     }
 
@@ -274,57 +291,58 @@ class ProductController extends Controller
 
         $data = $request->all();
 
-        if(isset($data['picture'])){
+        if (isset($data['picture'])) {
 
             // first checking old picture to delete from storage
-           $get_item = $product['picture'];
+            $get_item = $product['picture'];
 
-           // change file locations
-           $data['picture'] = $request->file('picture')->store(
-               'assets/file-product', 'public'
-           );
+            // change file locations
+            $data['picture'] = $request->file('picture')->store(
+                'assets/file-product',
+                'public'
+            );
 
-           // delete old picture from storage
-           $data_old = 'storage/'.$get_item;
-           if (File::exists($data_old)) {
-               File::delete($data_old);
-           }else{
-               File::delete('storage/app/public/'.$get_item);
-           }
+            // delete old picture from storage
+            $data_old = 'storage/' . $get_item;
+            if (File::exists($data_old)) {
+                File::delete($data_old);
+            } else {
+                File::delete('storage/app/public/' . $get_item);
+            }
 
-       }
+        }
 
-       $product->update($data);
+        $product->update($data);
 
-       
-       if ($request->filled('category_id')) {
-        // $category_id = json_decode($request->input('category_id', []), true);
-        $category_id = $request->input('category_id');
-        $parents = [];  $category_ids = [];
-        foreach($category_id as $categoryId ) {
-            $category = ProductCategory::where('id', $categoryId)->first();
-            $categoryRes = new ProductCategoryResource($category);
-            array_push($category_ids, $categoryId);
-            $parentId = $categoryRes->parent->id;
-            while(!is_null($parentId)){
-                array_push($category_ids,$parentId );
-                $parent = ProductCategory::where('id', $parentId)->first();
-                $parentRes = new ProductCategoryResource($parent);
-                if (!is_null($parentRes->parent)) {
-                    $parentNy = $parentRes->parent;
-                    $parentId = $parentNy->id;
-                }
-                else {
-                    break;
+
+        if ($request->filled('category_id')) {
+            // $category_id = json_decode($request->input('category_id', []), true);
+            $category_id = $request->input('category_id');
+            $parents = [];
+            $category_ids = [];
+            foreach ($category_id as $categoryId) {
+                $category = ProductCategory::where('id', $categoryId)->first();
+                $categoryRes = new ProductCategoryResource($category);
+                array_push($category_ids, $categoryId);
+                $parentId = $categoryRes->parent->id;
+                while (!is_null($parentId)) {
+                    array_push($category_ids, $parentId);
+                    $parent = ProductCategory::where('id', $parentId)->first();
+                    $parentRes = new ProductCategoryResource($parent);
+                    if (!is_null($parentRes->parent)) {
+                        $parentNy = $parentRes->parent;
+                        $parentId = $parentNy->id;
+                    } else {
+                        break;
+                    }
                 }
             }
+            $product->category()->sync($category_ids);
         }
-        $product->category()->sync($category_ids);
+
+        return response()->json(['data' => new ProductResource($product->refresh())]);
+
     }
-
-    return response()->json(['data' => new ProductResource($product->refresh())]);
-
-}
 
     /**
      * Remove the specified resource from storage.
@@ -334,19 +352,20 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        $user  = app('Dingo\Api\Auth\Auth')->user();
+        $user = app('Dingo\Api\Auth\Auth')->user();
         // $this->authorize( $user, $product);
         $this->authorize('products.delete', $product);
 
         $get_item = $product['picture'];
 
-        $data = 'storage/'.$get_item;
+        $data = 'storage/' . $get_item;
 
         if (File::exists($data)) {
             File::delete($data);
-        }else{
-            File::delete('storage/app/public/'.$get_item);
-        };
+        } else {
+            File::delete('storage/app/public/' . $get_item);
+        }
+        ;
 
         $product->forceDelete();
 

@@ -37,7 +37,10 @@ class BlogPostController extends Controller
     {
         //
 
-        $query = BlogPost::query()->with('author')->with('tag')->with('category');
+        $query = Cache::tags(['post'])->remember('post', 60, function() {
+            return BlogPost::query()->with('author')->with('tag')->with('category');
+        });
+        
 
         $query->when(request()->filled('sort'), function($query) {
             $sort = request()->query('sort');

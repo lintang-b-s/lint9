@@ -2,7 +2,7 @@
 
 use Dingo\Api\Routing\Router;
 use Illuminate\Http\Request;
-
+use App\Http\Controllers\Auth\AuthController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,6 +21,7 @@ Route::get('/', function () {
     echo 'Welcome to our API';
 });
 
+
 /** @var \Dingo\Api\Routing\Router $api */
 // ['middleware' => ['api']],
 $api = app('Dingo\Api\Routing\Router');
@@ -28,6 +29,8 @@ $api = app('Dingo\Api\Routing\Router');
 Route::name('users.')->prefix('users')->group(function () {
     Route::post('/', 'App\Http\Controllers\UserController@store');
 });
+
+
 
 $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
 
@@ -457,7 +460,27 @@ $api->version('v1',  ['middleware' => ['api']],function (Router $api) {
             $api->put('/{order}/settle', 'App\Http\Controllers\OrderStatusController@settle');
             $api->put('/{order}/cancel', 'App\Http\Controllers\OrderStatusController@cancel');
             $api->put('/{order}/return', 'App\Http\Controllers\OrderStatusController@return');
+        });
 
+
+        /*
+        * PrivateChats
+        */
+        $api->group(['prefix' => 'private-chats'], function (Router $api) {
+           
+            $api->get('/{chatroom}', 'App\Http\Controllers\PrivateChatController@index');
+            $api->post('/{chatroom}', 'App\Http\Controllers\PrivateChatController@store');
+            $api->get('/{chatroom}', 'App\Http\Controllers\PrivateChatController@get');
+        });
+
+      /*
+        * PublicChats
+        */
+        $api->group(['prefix' => 'public-chats'], function (Router $api) {
+            $api->get('/', 'App\Http\Controllers\PublicChatController@index');
+       
+            $api->post('/{chatroom}', 'App\Http\Controllers\PrivateChatController@store');
+            $api->get('/fetch/{chatroom}', 'App\Http\Controllers\PrivateChatController@get');
         });
     });
 });

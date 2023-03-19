@@ -24,6 +24,7 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.0",
         "laravel/tinker": "^2.5",
+        "laravel/ui": "*",
         "specialtactics/l5-api": "^3.0"
     },
     "require-dev": {

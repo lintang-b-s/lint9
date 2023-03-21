@@ -14,6 +14,7 @@ use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 
 use Illuminate\Database\Eloquent\Builder;
@@ -44,138 +45,147 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $query = Cache::tags(['product'])->remember("product", 60, function () {
-            return Product::query()->with('supplier')->with('discount')->with('category')->with('order_item')
+       
+        $query =  Product::query()->with('supplier')->with('discount')->with('category')->with('order_item')
                 ->withCount('product_review');
-        });
-        $query->where(function ($query) {
-            if (request()->filled('sort')) {
-                $sorts = explode(',', request()->input('sort', ''));
-                foreach ($sorts as $sortColumn) {
-                    $sortDirection = Str::startsWith($sortColumn, '-') ? 'desc' : 'asc';
-                    $sortColumn = ltrim($sortColumn, '-');
+        
+            $query->where(function ($query) {
+                if (request()->filled('sort')) {
+                    $sorts = explode(',', request()->input('sort', ''));
+                    foreach ($sorts as $sortColumn) {
+                        $sortDirection = Str::startsWith($sortColumn, '-') ? 'desc' : 'asc';
+                        $sortColumn = ltrim($sortColumn, '-');
 
-                    if ($sortColumn != 'review') {
-                        $query->orderBy($sortColumn, $sortDirection);
-                    } else {
-
-                        $query->orderBy('product_review_count', $sortDirection);
+                        if ($sortColumn != 'review') {
+                            $query->orderBy($sortColumn, $sortDirection);
+                        } else {
+                            $query->orderBy('product_review_count', $sortDirection);
+                        }
                     }
                 }
+                return $query;
             }
-            return $query;
-        }
         );
 
 
-    $query->where(function ($query) {
-        if (request()->filled('q')) {
-            $q = request()->query('q');
-            $query->where('product_name', 'like', '%' . $q . '%')
-                ->orWhere('product_description', 'like', '%' . $q . '%')
-                ->orWhereHas('category', function (Builder $query) use ($q) {
+        $query->where(function ($query) {
+            if (request()->filled('q')) {
+                $q = request()->query('q');
+                $query->where('product_name', 'like', '%' . $q . '%')
+                    ->orWhere('product_description', 'like', '%' . $q . '%')
+                    ->orWhereHas('category', function (Builder $query) use ($q) {
 
 
-                    $query->where('product_categories.category_name', $q);
+                        $query->where('product_categories.category_name', $q);
 
-                    return $query;
-                }
-                );
+                        return $query;
+                    }
+                    );
 
-            return $query;
+                return $query;
+            }
         }
-    }
-    );
+        );
 
-    $query->where(function ($query) {
-        if (request()->filled('filter')) {
-            $filters = explode('&', request('filter'));
+        $query->where(function ($query) {
+            if (request()->filled('filter')) {
+                $filters = explode('&', request('filter'));
 
-            foreach ($filters as $filter) {
-                [$criteria, $value] = explode(':', $filter);
+                foreach ($filters as $filter) {
+                    [$criteria, $value] = explode(':', $filter);
 
-                $query->where(function ($query) use ($criteria, $value) {
-                    if ($criteria != 'price' && $criteria != 'supplier_tier') {
-                        $query->whereHas($criteria, function (Builder $query) use ($value, $criteria) {
-                            $query->where(function ($query) use ($criteria, $value) {
-                                if ($criteria == 'category') {
-                                    $category_ids = collect(explode(',', $value))
-                                        ->map(function ($i) {
-                                            return trim($i); }
-                                        )
-                                        ->all();
-                                    $query->whereIn('category_id', $category_ids);
-                                }
-                            }
-                            )
-                                ->where(function ($query) use ($criteria, $value) {
-                                    if ($criteria == 'supplier') {
-                                        $supplier_ids = collect(explode(',', $value))
+                    $query->where(function ($query) use ($criteria, $value) {
+                        if ($criteria != 'price' && $criteria != 'supplier_tier') {
+                            $query->whereHas($criteria, function (Builder $query) use ($value, $criteria) {
+                                $query->where(function ($query) use ($criteria, $value) {
+                                    if ($criteria == 'category') {
+                                        $category_ids = collect(explode(',', $value))
                                             ->map(function ($i) {
-                                                    return trim($i); }
+                                                return trim($i); }
                                             )
                                             ->all();
-
-                                        $value = explode(',', $value);
-                                        foreach ($value as $address) {
-                                            $query->where(function ($query) use ($address, $supplier_ids, $criteria, $value) {
-                                                $query->where('address', 'like', '%' . $address . '%')
-                                                    ->orWhereIn('suppliers.id', $supplier_ids);
-                                                return $query;
-                                            }
-                                            );
-                                        }
+                                        $query->whereIn('category_id', $category_ids);
                                     }
                                 }
                                 )
-                                ->where(function ($query) use ($criteria, $value) {
-                                    if ($criteria == 'discount') {
-                                        $discount_ids = collect(explode(',', $value))
-                                            ->map(function ($i) {
-                                                    return trim($i); }
-                                            )
-                                            ->all();
-                                        $query->whereIn('discount_id', $discount_ids);
+                                    ->where(function ($query) use ($criteria, $value) {
+                                        if ($criteria == 'supplier') {
+                                            $supplier_ids = collect(explode(',', $value))
+                                                ->map(function ($i) {
+                                                        return trim($i); }
+                                                )
+                                                ->all();
+
+                                            $value = explode(',', $value);
+                                            foreach ($value as $address) {
+                                                $query->where(function ($query) use ($address, $supplier_ids, $criteria, $value) {
+                                                    $query->where('address', 'like', '%' . $address . '%')
+                                                        ->orWhereIn('suppliers.id', $supplier_ids);
+                                                    return $query;
+                                                }
+                                                );
+                                            }
+                                        }
                                     }
-                                }
-                                );
-
-                            return $query;
-                        }
-                        );
-                    }
-                }
-                )
-
-
-                    ->where(function ($query) use ($criteria, $value) {
-                        if ($criteria == 'price') {
-                            [$minPrice, $maxPrice] = explode(',', $value);
-                            $query->whereBetween('unit_price', [$minPrice, $maxPrice]);
-                        }
-                    }
-                    )
-                    ->where(function ($query) use ($criteria, $value) {
-                        if ($criteria == 'supplier_tier') {
-                            $query->whereHas('supplier', function (Builder $query) use ($value, $criteria) {
-                                $query->where('tier_id', $value);
+                                    )
+                                    ->where(function ($query) use ($criteria, $value) {
+                                        if ($criteria == 'discount') {
+                                            $discount_ids = collect(explode(',', $value))
+                                                ->map(function ($i) {
+                                                        return trim($i); }
+                                                )
+                                                ->all();
+                                            $query->whereIn('discount_id', $discount_ids);
+                                        }
+                                    }
+                                    );
 
                                 return $query;
                             }
                             );
                         }
-                        return $query;
                     }
-                    );
+                    )
 
+
+                        ->where(function ($query) use ($criteria, $value) {
+                            if ($criteria == 'price') {
+                                [$minPrice, $maxPrice] = explode(',', $value);
+                                $query->whereBetween('unit_price', [$minPrice, $maxPrice]);
+                            }
+                        }
+                        )
+                        ->where(function ($query) use ($criteria, $value) {
+                            if ($criteria == 'supplier_tier') {
+                                $query->whereHas('supplier', function (Builder $query) use ($value, $criteria) {
+                                    $query->where('tier_id', $value);
+
+                                    return $query;
+                                }
+                                );
+                            }
+                            return $query;
+                        }
+                        );
+
+                }
             }
+
+            return $query;
+
         }
+        );
 
-        return $query;
+        $bestSellers = Product::bestSellersProduct()->get();
+        // $cachedQuery = Cache::tags(['product'])->remember("product", 60, function () use ($query){
+        //     return $query->paginate(20);
+        // });
 
-    }
-    );
-        return response()->json(['data' => ProductResource::collection($query->paginate(20))]);
+        $cachedQuery = Cache::tags(['product'])->remember("product", 60, function () use ($bestSellers) {
+            return $bestSellers->paginate(20);
+        });
+
+        return response()->json(['data' =>['products'=>ProductResource::collection($query->paginate(20)), 'bestSellers' => $cachedQuery] ]);
 
     }
 

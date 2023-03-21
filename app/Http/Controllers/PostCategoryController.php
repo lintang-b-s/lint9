@@ -9,8 +9,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 use App\Http\Resources\PostCategory as PostCategoryResource;
 
-use App\Http\Requests\PostCategories\UpdatePostCategoryRequest;
-use App\Http\Requests\PostCategories\StorePostCategoryRequest;
+use App\Http\Requests\PostCategories\UpdatePostCategoriesRequest;
+// use App\Http\Requests\PostCategories\StorePostCategoriesRequest;
+use App\Http\Requests\PostCategories\StorePostCategoriesRequest;
 
 
 class PostCategoryController extends Controller
@@ -47,7 +48,7 @@ class PostCategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StorePostCategoryRequest $request)
+    public function store(StorePostCategoriesRequest $request)
     {
         $data = $request->all();
         
@@ -85,7 +86,7 @@ class PostCategoryController extends Controller
      * @param  \App\Models\PostCategory  $postCategory
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatePostCategoryRequest $request, PostCategory $postCategory)
+    public function update(UpdatePostCategoriesRequest $request, PostCategory $postCategory)
     {
         //
     }

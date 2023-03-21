@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
+
 
 class Product extends Model
 {
@@ -81,5 +83,10 @@ class Product extends Model
     public function product_review()
     {
         return $this->hasMany('App\Models\ProductReview', 'product_id');
+    }
+
+    public function scopeBestSellersProduct(Builder $query) {
+        return $query->latest()
+            ->orderBy('sold', 'desc');
     }
 }

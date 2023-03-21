@@ -25,6 +25,7 @@
         "laravel/framework": "^8.0",
         "laravel/tinker": "^2.5",
         "laravel/ui": "*",
+        "predis/predis": "^2.1",
         "specialtactics/l5-api": "^3.0"
     },
     "require-dev": {

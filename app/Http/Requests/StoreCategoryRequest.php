@@ -25,7 +25,7 @@ class StoreCategoryRequest extends FormRequest
     {
         return [
             'title' => 'bail|min:2|required|unique:categories|max:255',
-            'metaTitle' => 'min:2|required|max:255',
+            'meta_title' => 'min:2|required|max:255',
             'slug' => 'min:2|required|unique:categories|max:255',
             'content' => 'min:3|required',
         ];

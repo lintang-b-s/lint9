@@ -6,8 +6,8 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-use App\Http\Requests\PostCategories\UpdateCategoryRequest;
-use App\Http\Requests\PostCategories\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Requests\StoreCategoryRequest;
 
 use App\Http\Resources\Category as CategoryResource;
 

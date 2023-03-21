@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\Post\UpdatePostRequest;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
+
 
 
 use Dingo\Api\Exception\DeleteResourceFailedException;
@@ -37,9 +39,9 @@ class BlogPostController extends Controller
     {
         //
 
-        $query = Cache::tags(['post'])->remember('post', 60, function() {
-            return BlogPost::query()->with('author')->with('tag')->with('category');
-        });
+        $query =  BlogPost::query()->with('author')->with('tag')->with('category');
+      
+        
         
 
         $query->when(request()->filled('sort'), function($query) {
@@ -77,8 +79,11 @@ class BlogPostController extends Controller
             return $query;
          });
 
+         $cachedMostcomment = Cache::tags(['post-most-comment'])->remember('post-most-comment', 60, function () use ($query) {
+            return PostResource::collection(BlogPost::mostComment()->orderBy('post_comment_count', 'asc')->paginate(10));
+        });
          return response()->json(['data' => [ 'posts' =>PostResource::collection($query->paginate(15)) , 
-            'mostComment' =>  PostResource::collection(BlogPost::mostComment()->orderBy('post_comment_count', 'asc')->paginate(10))] ]);
+            'mostComment' => $cachedMostcomment] ]);
     }
 
     /**
